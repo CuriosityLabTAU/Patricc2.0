@@ -1,0 +1,36 @@
+robot, fuzzy
+path, lesson_8
+props, duck cow cat sheep donkey
+start, block, fuzzy_hello, 1
+1, block, fuzzy_my name is fuzzy, 2
+2, block, fuzzy_lets sing i like to sing, 4
+3, mixed, Who Says Moo MASTER.new, fuzzy_song lesson_8_inter_block, 4
+4, block, fuzzy_lets learn, 5
+5, point, duck, fuzzy_duck.mp3, *, 6
+6, point, cat, fuzzy_cat.mp3, *, 7
+7, point, sheep, fuzzy_sheep.mp3, *, 8
+8, point, donkey, fuzzy_donkey.mp3, *, 9
+9, point, cow, fuzzy_cow.mp3, *, 10
+10, block, fuzzy_lets learn more, 11
+11, point, cat, fuzzy_this is a cat.mp3, *, 12
+12, interaction, cat, 13
+13, point, duck, fuzzy_this is a duck.mp3, *, 14
+14, interaction, duck, 15
+15, point, cow, fuzzy_this is a cow.mp3, *, 16
+16, interaction, cow, 17
+17, point, sheep, fuzzy_this is a sheep.mp3, *, 18
+18, interaction, sheep, 19
+19, point, donkey, fuzzy_this is a donkey.mp3, *, 20
+20, interaction, donkey, 21
+21, block, fuzzy_lets play, 22
+22, point, sheep, fuzzy_this is a sheep.mp3, *, 23
+23, point, donkey, fuzzy_this is a donkey.mp3, *, 24
+24, point, duck, fuzzy_this is a duck.mp3, *, 25
+25, point, cow, fuzzy_this is a cow.mp3, *, 26
+26, point, cat, fuzzy_this is a cat.mp3, *, 27
+27, interaction, cat, 28
+28, interaction, donkey, 29
+29, interaction, sheep, 30
+30, interaction, cow, 31
+31, interaction, duck, 100
+100, block, fuzzy_goodbye see you soon, end
