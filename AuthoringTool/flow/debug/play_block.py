@@ -4,6 +4,7 @@ import time
 import rospy
 from dynamixel_hr_ros.msg import *
 from std_msgs.msg import String
+from std_msgs.msg import Int8
 import numpy as np
 from scipy.signal import *
 import matplotlib.pyplot as plt
@@ -31,7 +32,9 @@ class play_block():
         self.is_rfid_change = False
 
         #self.publisher = rospy.Publisher('/dxl/command_position', CommandPosition, queue_size=10)
-        self.publisher = rospy.Publisher('/patricc_motion_control', CommandPosition, queue_size=10)
+        self.motor_publisher = rospy.Publisher('/patricc_motion_control', CommandPosition, queue_size=10)
+        self.mode_publisher = rospy.Publisher('/patricc_activation_mode', String, queue_size=10)
+
 
         self.rifd_sub = rospy.Subscriber('/rfid', String, self.callback)
 
@@ -57,6 +60,9 @@ class play_block():
         self.motor_speed = robot_parameters.motor_speed
 
         rospy.init_node('block_player')
+        time.sleep(1)
+        print 'open node'
+
 
     def test_motors(self):
         the_range = np.sin(np.linspace(0.0, 2.0 * np.pi, 200)) * 0.5 + 0.5
@@ -67,7 +73,7 @@ class play_block():
             new_command.angle = [self.robot_angle_range[i][0] + the_range[j] * (self.robot_angle_range[i][1] - self.robot_angle_range[i][0]) for i in range(8)]
             new_command.speed = self.motor_speed
 
-            self.publisher.publish(new_command)
+            self.motor_publisher.publish(new_command)
             time.sleep(dt)
 
     def callback(self, data):
@@ -182,7 +188,7 @@ class play_block():
                 new_command.angle = new_item[2].angle
 
                 new_command.speed = self.motor_speed
-                self.publisher.publish(new_command)
+                self.motor_publisher.publish(new_command)
 
                 real_output.append(new_command.angle)
 
@@ -233,7 +239,7 @@ class play_block():
                 new_command.id = [i for i in range(1, 9)]
                 new_command.angle = new_item[2].angle
                 new_command.speed = self.motor_speed
-                self.publisher.publish(new_command)
+                self.motor_publisher.publish(new_command)
 
                 real_output.append(new_command.angle)
 
@@ -280,7 +286,7 @@ class play_block():
                 new_command.angle = new_item[1:]
                 print new_command.angle
                 new_command.speed = self.motor_speed
-                self.publisher.publish(new_command)
+                self.motor_publisher.publish(new_command)
 
                 if self.sound_offset is not None:
                     if not is_playing and current_time >= self.sound_offset:

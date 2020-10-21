@@ -190,12 +190,19 @@ class FlowNode:
                         'block': "%s_very good well done 2" % self.flow['robot'][:-1],
                         'next': step_desc[3].lstrip()
                     }
+                elif step_desc[1].lstrip() == 'gaze_towards':
+                    self.flow[step_desc[0]] = {
+                        'type': 'gaze_towards',
+                        'who': step_desc[2].lstrip(),
+                        'next': step_desc[3].lstrip()
+                    }
                 else:
                     self.flow[step_desc[0]] = {
                         'type': 'block',
                         'block': step_desc[1].lstrip(),
                         'next': step_desc[2].lstrip()
                     }
+
 
     def load_inter_block_sequence(self, file_name=''):
         interupt = {}
@@ -290,6 +297,10 @@ class FlowNode:
                 print('resolution:', resolution)
                 if not interupt_sequence:
                     current_step = self.flow[current_step][resolution]
+            elif self.flow[current_step]['type'] == 'gaze_towards':
+                print 'here', self.flow[current_step]['who']
+                FlowNode.block_player.mode_publisher.publish(self.flow[current_step]['who'])
+                current_step = self.flow[current_step]['next']
             else:
                 block_name = self.get_block_name(current_step)
                 FlowNode.block_player.sound_filename = None
