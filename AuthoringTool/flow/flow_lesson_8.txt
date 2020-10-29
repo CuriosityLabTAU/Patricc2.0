@@ -3,7 +3,7 @@ path, lesson_8
 props, duck cow cat sheep donkey
 start, block, fuzzy_hello, 1
 1, block, fuzzy_my name is fuzzy, 2
-2, block, fuzzy_lets sing i like to sing, 4
+2, block, fuzzy_lets sing i like to sing, 1
 3, mixed, Who Says Moo MASTER.new, fuzzy_song lesson_8_inter_block, 4
 4, block, fuzzy_lets learn, 5
 5, point, duck, fuzzy_duck.mp3, *, 6

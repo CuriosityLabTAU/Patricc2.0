@@ -2,6 +2,7 @@ from play_block import *
 from datetime import datetime
 import copy
 import os.path
+import collections
 
 
 # block_player = play_block()
@@ -196,6 +197,23 @@ class FlowNode:
                         'who': step_desc[2].lstrip(),
                         'next': step_desc[3].lstrip()
                     }
+
+                elif step_desc[1].lstrip() == 'check_prop_state':
+                    self.flow[step_desc[0]] = {
+                        'type': 'check_prop_state',
+                        'props_on_console': step_desc[2].lstrip().split(' '),
+                        'next': step_desc[3].lstrip()
+                    }
+                elif step_desc[1].lstrip() == 'pick_up_something':
+                    self.flow[step_desc[0]] = {
+                        'type': 'pick_up_something',
+                        'duration': step_desc[2].lstrip(),
+                        'timeout': step_desc[3].lstrip(),
+                        'repeats': step_desc[4].lstrip(),
+                        'nothing_happened': step_desc[5].lstrip(),
+                        'sound_name': step_desc[6].lstrip(),
+                        'next': step_desc[7].lstrip(),
+                    }
                 else:
                     self.flow[step_desc[0]] = {
                         'type': 'block',
@@ -300,6 +318,13 @@ class FlowNode:
             elif self.flow[current_step]['type'] == 'gaze_towards':
                 print 'here', self.flow[current_step]['who']
                 FlowNode.block_player.mode_publisher.publish(self.flow[current_step]['who'])
+                current_step = self.flow[current_step]['next']
+            elif self.flow[current_step]['type'] == 'check_prop_state':
+                print "detected", FlowNode.block_player.rfids, "desired", self.flow[current_step]['props_on_console']
+                if collections.Counter(FlowNode.block_player.rfids) == collections.Counter(self.flow[current_step]['props_on_console']):
+                    print "all good"
+                else:
+                    print "prop correction"
                 current_step = self.flow[current_step]['next']
             else:
                 block_name = self.get_block_name(current_step)

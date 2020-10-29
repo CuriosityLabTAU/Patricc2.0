@@ -2,5 +2,7 @@ robot, fuzzy
 path, demo
 props, sheep goat donkey rooster fish
 start, block, fuzzy_hello, 2
-2, gaze_towards, face_tracking, 3
+22, gaze_towards, face_tracking, 3
+23, check_prop_state, sheep goat donkey fish rooster, 3
+2, pick_up_something,what_do_you_like_to_eat, 5, 3,
 3, block, fuzzy_goodbye see you soon, end
