@@ -16,19 +16,11 @@ class FlowNode:
         self.flow = None
         self.prev_block = None
         self.next_block = None
-
 ######################################################OG
         self.event_occured = False
-        self.exit_step = 'start'
-        self.wrong_in_air = []
-        self.wrong_on_console = []
-
-        self.active_event = False
-        self.rule_sign = []
-        self.rule = []
-        self.event_goto = 'start'
+        self.exit_step = "start"
+        self.wrong_props = []
 ######################################################
-
         self.base_path = '../'
 
     def sound_exist(self, file_name):
@@ -226,7 +218,6 @@ class FlowNode:
                         'sound_name': step_desc[6].lstrip(),
                         'next': step_desc[7].lstrip(),
                     }
-
 ##################################################################################OG
                 elif step_desc[1].lstrip() == 'loop_block':
                     self.flow[step_desc[0]] = {
@@ -241,31 +232,20 @@ class FlowNode:
                 elif step_desc[1].lstrip() == 'prop_event':
                     self.flow[step_desc[0]] = {
                         'type': step_desc[1].lstrip(),
-                        'active': step_desc[2].lstrip(),
+                        'activation': step_desc[2].lstrip(),
                         'rule_sign': step_desc[3].lstrip(),
                         'rule': step_desc[4].lstrip(),
-                        'goto': step_desc[5].lstrip(),
+                        'go_to': step_desc[5].lstrip(),
                         'next': step_desc[6].lstrip(),
                     }
 ##################################################################################
-
-##################################################################################OG
-
-                elif step_desc[1].lstrip() == 'prop_block':
-                    self.flow[step_desc[0]] = {
-                        'type': step_desc[1].lstrip(),
-                        'block': step_desc[2].lstrip(),
-                        'prop' : step_desc[3].lstrip(),
-                        'next': step_desc[4].lstrip()
-                    }
-##################################################################################
-
                 else:
                     self.flow[step_desc[0]] = {
                         'type': 'block',
                         'block': step_desc[1].lstrip(),
                         'next': step_desc[2].lstrip()
                     }
+
 
     def load_inter_block_sequence(self, file_name=''):
         interupt = {}
@@ -287,11 +267,7 @@ class FlowNode:
             # check if all the props are there
             # say (put_down) for those who aren't
 ########################################################OG
-            if self.active_event==True:
-                self.check_event()
-                if self.event_occured == True:
-                    self.exit_step = current_step
-                    current_step = self.event_goto
+            self.check_event()
 ########################################################
             if not current_step == 'correction_block' and '*' not in current_step:
                 a_prop_is_missing = False
@@ -368,9 +344,8 @@ class FlowNode:
                 if not interupt_sequence:
                     current_step = self.flow[current_step][resolution]
 
-
 #########################################################################OG
-            elif self.flow[current_step]['type'] == 'loop_block':
+            if self.flow[current_step]['type'] == 'loop_block':
                 block_name = self.get_block_name(current_step)
                 FlowNode.block_player.sound_filename = None
                 FlowNode.block_player.lip_filename = None
@@ -386,24 +361,9 @@ class FlowNode:
                         break
                     time.sleep(0.1)
                 current_step = self.flow[current_step]['next']
-
-            elif self.flow[current_step]['type'] == 'prop_event':
-                self.activation = self.flow[current_step]['activation']
-                self.rule_sign = self.flow[current_step]['rule_sign']
-                self.rule = self.flow[current_step]['rule']
-                self.event_goto = self.flow[current_step]['goto']
-                current_step = self.flow[current_step]['next']
 ############################################################################
 
 ############################################################################OG
-            #elif self.flow[current_step]['type'] == 'prop_block':
-            #    block_name = self.get_block_name(current_step)
-            #    self.next_block = self.get_block_name(self.flow[current_step]['next'])
-            #    stop_on_sound = False # TODO: OG - check with Goren what stop_on_sound is
-            #    block_name = block_name.format(self.flow[current_step]['prop'])
-            #    self.play_complex_block(block_name, stop_on_sound=stop_on_sound)
-            #    current_step = self.flow[current_step]['next']
-###########################################################################
             elif self.flow[current_step]['type'] == 'gaze_towards':
                 print 'here', self.flow[current_step]['who']
                 FlowNode.block_player.mode_publisher.publish(self.flow[current_step]['who'])
@@ -468,9 +428,6 @@ class FlowNode:
                 block_name = self.get_point_block(self.flow[current_step]['rfid'])
             elif self.flow[current_step]['type'] == 'mixed':
                 block_name = self.base_path + 'blocks/' + self.flow['path'] + self.flow[current_step]['block']
-            elif self.flow[current_step]['type'] == 'prop_block':
-                block_name = self.base_path + 'blocks/' + self.flow['path'] + self.flow[current_step]['block'].format(self.flow[current_step]['prop'])
-                print "testing", block_name
         return block_name
 
     def get_point_block(self, rfid):
@@ -486,7 +443,6 @@ class FlowNode:
         return block_name
 
     def play_complex_block(self, block_name, stop_on_sound=False, motor_commands=None):
-        print block_name
         FlowNode.block_player.load_block(block_name)
         new_motor_commands = FlowNode.block_player.stitch_blocks(block_before=self.prev_block,
                                                         block_after=self.next_block,
@@ -570,21 +526,17 @@ class FlowNode:
 
 ##################################################OG
     def check_event(self):
-        self.wrong_in_air = []
-        self.wrong_on_console = []
-        detected_props = [x for x in FlowNode.block_player.rfids if x != 'none']
-        if set(detected_props)==set(self.rule):
-            if self.rule_sign == 'positive':
-                self.event_occured = True
-            elif self.rule_sign == 'negative':
-                self.event_occured = False
-        else:
-            if self.rule.sign == 'negative':
-                self.event_occured = True
-            elif self.rule_sign == 'positive':
-                self.event_occured = False
-        self.wrong_in_air = np.setdiff1d(self.rule,detected_props)
-        self.wrong_on_console = np.setdiff1d(detected_props, self.rule)
+        self.wrong_props = []
+        if rule_sign==positive:
+            if props==rule:
+                event_occured = True
+            else:
+                event_occured = False
+        if rule_sign==negative:
+            if props!=rule:
+                event_occured = True
+            else:
+                event_occured = False
 #################################################
 
 
