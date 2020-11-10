@@ -3,5 +3,13 @@ path, lesson_8
 props, duck cow cat sheep donkey
 start, block, fuzzy_hello, 1
 1, prop_block, fuzzy_my {} is fuzzy,name, 2
-2, loop_block, fuzzy_hello, 100
+2, loop_block, fuzzy_hello, 5, 3
+3, prop_event, on, negative, duck cow cat sheep donkey,200,4
+4, block, fuzzy_lets play, 5
+5, block, fuzzy_try again you can do it, 6
+6, block, fuzzy_try again 1,
+
 100, block, fuzzy_goodbye see you soon, end
+
+200, block, fuzzy_lets learn, 201
+201, block, fuzzy_lets learn more, exit_step

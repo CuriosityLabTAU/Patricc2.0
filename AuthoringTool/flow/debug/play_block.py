@@ -104,6 +104,7 @@ class play_block():
     # block things
     def load_block(self, block_filename = 'blocks/block_spider_1'):
         self.filename = block_filename
+        print 'what went wrong : ', self.filename
         with open(self.filename, 'rb') as input:
             play_block = pickle.load(input)
 
@@ -285,7 +286,7 @@ class play_block():
                 new_command = CommandPosition()
                 new_command.id = [i for i in range(1, 9)]
                 new_command.angle = new_item[1:]
-                print new_command.angle
+                #print new_command.angle
                 new_command.speed = self.motor_speed
                 self.motor_publisher.publish(new_command)
 

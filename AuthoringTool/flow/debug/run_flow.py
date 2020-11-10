@@ -23,7 +23,7 @@ class FlowNode:
         self.wrong_in_air = []
         self.wrong_on_console = []
 
-        self.active_event = False
+        self.activation = 'off'
         self.rule_sign = []
         self.rule = []
         self.event_goto = 'start'
@@ -241,9 +241,9 @@ class FlowNode:
                 elif step_desc[1].lstrip() == 'prop_event':
                     self.flow[step_desc[0]] = {
                         'type': step_desc[1].lstrip(),
-                        'active': step_desc[2].lstrip(),
+                        'activation': step_desc[2].lstrip(),
                         'rule_sign': step_desc[3].lstrip(),
-                        'rule': step_desc[4].lstrip(),
+                        'rule': step_desc[4].lstrip().split(' '),
                         'goto': step_desc[5].lstrip(),
                         'next': step_desc[6].lstrip(),
                     }
@@ -287,86 +287,89 @@ class FlowNode:
             # check if all the props are there
             # say (put_down) for those who aren't
 ########################################################OG
-            if self.active_event==True:
+            if current_step == 'exit_step':
+                current_step = self.exit_step
+########################################################OG
+            if self.activation=='on':
                 self.check_event()
                 if self.event_occured == True:
                     self.exit_step = current_step
                     current_step = self.event_goto
 ########################################################
-            if not current_step == 'correction_block' and '*' not in current_step:
-                a_prop_is_missing = False
-                # FlowNode.block_player.update_rifd()
-                for p in self.flow['props']:
-                    if p not in FlowNode.block_player.rfids and p not in current_prop:
-                        # check if there is a proper file name
-                        sound_file_name = "%s_put down the %s.mp3" % (self.flow['robot'][:-1], p)
-                        if self.sound_exist(sound_file_name):
-                            if 'next' in self.flow[current_step]: # wierd bug correction
-                                self.flow['correction_block'] = {
-                                    'type': 'composite',
-                                    'block': self.base_path + 'blocks/'+ self.flow['robot'] + self.flow['robot'][:-1] + '_idle_1.new',
-                                    'next': self.flow[current_step]['next'],
-                                    'sound': "%s_put down the %s.mp3" % (self.flow['robot'][:-1], p),
-                                    'lip': "%s_put down the %s.csv" % (self.flow['robot'][:-1], p),
-                                    'props': []
-                                }
-                                current_step = 'correction_block'
-                                a_prop_is_missing = True
-                                FlowNode.block_player.sound_offset = 0.0
-                if a_prop_is_missing:
-                    time.sleep(1.0)
-                    continue
-            if self.flow[current_step]['type'] == 'wait':
-                current_prop = []
-                block_name = self.base_path + 'blocks/'+ self.flow['robot'] + self.flow['robot'][:-1] + '_idle_1.new'
-                FlowNode.block_player.sound_filename = None
-                FlowNode.block_player.lip_filename = None
-
-                stopwatch_start = datetime.now()
-                resolution = 'timeout'
-                interupt_sequence = False
-                while (datetime.now() - stopwatch_start).total_seconds() < float(self.flow[current_step]['duration']):
-                    # ===============
-                    self.play_complex_block(block_name)
-                    # ================
-                    if FlowNode.block_player.update_rifd(): # Removed because there is only a need to change current status and not change # FlowNode.block_player.update_rifd():
-                        print('a change')
-                        correct_resolution = 0
-                        for p in self.flow[current_step]['props']:
-                            if p[0] == '-':    # pick up
-                                if p[1:] not in FlowNode.block_player.rfids:
-                                    correct_resolution += 1
-                                    current_prop.append(p[1:])
-                            elif p[0] == '+':    # put down
-                                if p[1:] in FlowNode.block_player.rfids:
-                                    correct_resolution += 1
-                                    current_prop.append(p[1:])
-                        if correct_resolution  == 0:
-                            resolution = 'false'
-                            wrong_props = [p for p in FlowNode.block_player.rfid_change if p is not None]
-                            # first check if there are any wrong props
-                            if len(wrong_props) > 0:
-                                self.flow['correction_block'] = {
-                                    'type': 'composite',
-                                    'block': self.base_path + 'blocks/'+ self.flow['robot'] + self.flow['robot'][:-1] + '_idle_1.new',
-                                    'next': self.flow[current_step][resolution],
-                                    'sound': "%s_this is a %s.mp3" % (self.flow['robot'][:-1], wrong_props[0]),
-                                    'lip': "%s_this is a %s.csv" % (self.flow['robot'][:-1], wrong_props[0]),
-                                    'props': []
-                                }
-                                current_step = 'correction_block'
-                                interupt_sequence = True
-                                FlowNode.block_player.sound_offset = 0.0
-                                break
-                        elif correct_resolution == len(self.flow[current_step]['props']):
-                            resolution = 'true'
-                            break
-                        break
-                    time.sleep(0.1)
-
-                print('resolution:', resolution)
-                if not interupt_sequence:
-                    current_step = self.flow[current_step][resolution]
+            #if not current_step == 'correction_block' and '*' not in current_step:
+            #    a_prop_is_missing = False
+            #    # FlowNode.block_player.update_rifd()
+            #   for p in self.flow['props']:
+            #        if p not in FlowNode.block_player.rfids and p not in current_prop:
+            #            # check if there is a proper file name
+            #            sound_file_name = "%s_put down the %s.mp3" % (self.flow['robot'][:-1], p)
+            #            if self.sound_exist(sound_file_name):
+            #                if 'next' in self.flow[current_step]: # wierd bug correction
+            #                    self.flow['correction_block'] = {
+            #                        'type': 'composite',
+            #                        'block': self.base_path + 'blocks/'+ self.flow['robot'] + self.flow['robot'][:-1] + '_idle_1.new',
+            #                        'next': self.flow[current_step]['next'],
+            #                        'sound': "%s_put down the %s.mp3" % (self.flow['robot'][:-1], p),
+            #                        'lip': "%s_put down the %s.csv" % (self.flow['robot'][:-1], p),
+            #                        'props': []
+            #                    }
+            #                    current_step = 'correction_block'
+            #                    a_prop_is_missing = True
+            #                    FlowNode.block_player.sound_offset = 0.0
+            #    if a_prop_is_missing:
+            #        time.sleep(1.0)
+            #        continue
+            #if self.flow[current_step]['type'] == 'wait':
+            #    current_prop = []
+            #    block_name = self.base_path + 'blocks/'+ self.flow['robot'] + self.flow['robot'][:-1] + '_idle_1.new'
+            #    FlowNode.block_player.sound_filename = None
+            #    FlowNode.block_player.lip_filename = None
+            #
+            #    stopwatch_start = datetime.now()
+            #    resolution = 'timeout'
+            #    interupt_sequence = False
+            #    while (datetime.now() - stopwatch_start).total_seconds() < float(self.flow[current_step]['duration']):
+            #        # ===============
+            #        self.play_complex_block(block_name)
+            #        # ================
+            #        if FlowNode.block_player.update_rifd(): # Removed because there is only a need to change current status and not change # FlowNode.block_player.update_rifd():
+            #            print('a change')
+            #            correct_resolution = 0
+            #            for p in self.flow[current_step]['props']:
+            #                if p[0] == '-':    # pick up
+            #                    if p[1:] not in FlowNode.block_player.rfids:
+            #                        correct_resolution += 1
+            #                        current_prop.append(p[1:])
+            #                elif p[0] == '+':    # put down
+            #                    if p[1:] in FlowNode.block_player.rfids:
+            #                        correct_resolution += 1
+            #                        current_prop.append(p[1:])
+            #            if correct_resolution  == 0:
+            #                resolution = 'false'
+            #                wrong_props = [p for p in FlowNode.block_player.rfid_change if p is not None]
+            #                # first check if there are any wrong props
+            #                if len(wrong_props) > 0:
+            #                    self.flow['correction_block'] = {
+            #                        'type': 'composite',
+            #                        'block': self.base_path + 'blocks/'+ self.flow['robot'] + self.flow['robot'][:-1] + '_idle_1.new',
+            #                        'next': self.flow[current_step][resolution],
+            #                        'sound': "%s_this is a %s.mp3" % (self.flow['robot'][:-1], wrong_props[0]),
+            #                        'lip': "%s_this is a %s.csv" % (self.flow['robot'][:-1], wrong_props[0]),
+            #                        'props': []
+            #                    }
+            #                    current_step = 'correction_block'
+            #                    interupt_sequence = True
+            #                    FlowNode.block_player.sound_offset = 0.0
+            #                    break
+            #            elif correct_resolution == len(self.flow[current_step]['props']):
+            #                resolution = 'true'
+            #                break
+            #            break
+            #        time.sleep(0.1)
+            #
+            #    print('resolution:', resolution)
+            #    if not interupt_sequence:
+            #        current_step = self.flow[current_step][resolution]
 
 
 #########################################################################OG
@@ -386,7 +389,15 @@ class FlowNode:
                         break
                     time.sleep(0.1)
                 current_step = self.flow[current_step]['next']
-
+##########################################################################OG temp
+             #else:
+             #   block_name = self.get_block_name(current_step)
+             #   FlowNode.block_player.sound_filename = None
+             #   self.next_block = self.get_block_name(self.flow[current_step]['next'])
+             #   stop_on_sound = False #self.flow[current_step]['type'] == 'point' #TODO
+             #   self.play_complex_block(block_name, stop_on_sound=stop_on_sound)
+             #   current_step = self.flow[current_step]['next']
+##########################################################################
             elif self.flow[current_step]['type'] == 'prop_event':
                 self.activation = self.flow[current_step]['activation']
                 self.rule_sign = self.flow[current_step]['rule_sign']
@@ -459,6 +470,10 @@ class FlowNode:
         if current_step != 'end':
             if self.flow[current_step]['type'] == 'block':
                 block_name = self.base_path + 'blocks/' + self.flow['path'] + self.flow[current_step]['block']
+##################################################################OG
+            elif self.flow[current_step]['type'] == 'loop_block':
+                block_name = self.base_path + 'blocks/' + self.flow['path'] + self.flow[current_step]['block']
+##################################################################
             elif self.flow[current_step]['type'] == 'composite':
                 if 'blocks' not in self.flow[current_step]['block']:
                     block_name = self.base_path + 'blocks/' + self.flow['path'] + self.flow[current_step]['block']
@@ -572,19 +587,22 @@ class FlowNode:
     def check_event(self):
         self.wrong_in_air = []
         self.wrong_on_console = []
-        detected_props = [x for x in FlowNode.block_player.rfids if x != 'none']
+        detected_props = [x for x in FlowNode.block_player.rfids if x != None]
+        print 'detected: ', detected_props, ' rule: ', self.rule
         if set(detected_props)==set(self.rule):
             if self.rule_sign == 'positive':
                 self.event_occured = True
             elif self.rule_sign == 'negative':
                 self.event_occured = False
         else:
-            if self.rule.sign == 'negative':
+            if self.rule_sign == 'negative':
                 self.event_occured = True
             elif self.rule_sign == 'positive':
                 self.event_occured = False
+        print self.event_occured
         self.wrong_in_air = np.setdiff1d(self.rule,detected_props)
         self.wrong_on_console = np.setdiff1d(detected_props, self.rule)
+        time.sleep(0.5)
 #################################################
 
 
