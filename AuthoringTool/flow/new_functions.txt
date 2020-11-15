@@ -1,15 +1,16 @@
 robot, fuzzy
 path, lesson_8
 props, duck cow cat sheep donkey
-start, block, fuzzy_hello, 1
+start, block, fuzzy_hello, 1 3
 1, prop_block, fuzzy_my {} is fuzzy,name, 2
-2, loop_block, fuzzy_hello, 5, 3
-3, prop_event, on, negative, duck cow cat sheep donkey,200,4
+2, loop_block, fuzzy_hello, 2, 3
+3, prop_event, all_down, on, negative, duck cow cat sheep donkey,200,4
 4, block, fuzzy_lets play, 5
 5, block, fuzzy_try again you can do it, 6
-6, block, fuzzy_try again 1,
+6, block, fuzzy_try again 1, 100
 
 100, block, fuzzy_goodbye see you soon, end
 
-200, block, fuzzy_lets learn, 201
-201, block, fuzzy_lets learn more, exit_step
+200, prop_event, one_up, on, positive, duck cow cat sheep donkey, 202, 201
+201, block, fuzzy_lets learn, 201
+202, block, fuzzy_lets learn more, exit_step

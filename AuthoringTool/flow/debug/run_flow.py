@@ -65,8 +65,9 @@ class FlowNode:
                     self.flow[step_desc[0]] = {
                         'type': 'block',
                         'block': step_desc[2].lstrip(),
-                        'next': step_desc[3].lstrip()
+                        'next': step_desc[3].lstrip().split(' ')
                     }
+                    print 'we are here', step_desc[3].lstrip().split(' ')
                 elif step_desc[1].lstrip() == 'composite':
                     self.flow[step_desc[0]] = {
                         'type': 'composite',
@@ -97,119 +98,12 @@ class FlowNode:
                         'next': step_desc[4].lstrip()
                     }
                     self.flow[step_desc[0]]['motor_commands'] = self.convert_mixed(self.flow[step_desc[0]])
-                elif step_desc[1].lstrip() == 'interaction':
-                    interaction_step = step_desc[0]
-                    step_desc[2] = step_desc[2].lstrip()
-                    self.flow[interaction_step] = {
-                        'type': 'composite',
-                        'block': 'pick_up_2_a',
-                        'next': step_desc[0] + '.1'
-                    }
-                    the_props = step_desc[2].lstrip().split(' ')
-                    self.flow[interaction_step]['sound'] = "%s_pick up the %s" % (self.flow['robot'][:-1], the_props[0])
-                    if len(the_props) == 2:
-                        self.flow[interaction_step]['sound'] += " and the %s" % the_props[1]
-                    self.flow[interaction_step]['lip'] = self.flow[interaction_step]['sound'] + '.csv'
-                    self.flow[interaction_step]['sound'] = self.flow[interaction_step]['sound'] + '.mp3'
-                    self.flow[interaction_step]['correct'] = ''
-                    for p in the_props:
-                        self.flow[interaction_step]['correct'] += ' -' + p
-                    self.flow[interaction_step]['props'] = self.flow[interaction_step]['correct'].lstrip().split(' ')
-
-                    interaction_step = step_desc[0] + '.1'
-
-                    self.flow[interaction_step] = {
-                        'type': 'wait',
-                        'duration': '10',
-                        'false': step_desc[0] + '.2',
-                        'timeout': step_desc[0] + '.3',
-                        'true': step_desc[0] + '.4',
-                    }
-                    self.flow[interaction_step]['correct'] = ''
-                    for p in the_props:
-                        self.flow[interaction_step]['correct'] += ' -' + p
-                    self.flow[interaction_step]['props'] = self.flow[interaction_step]['correct'].lstrip().split(' ')
-
-                    interaction_step = step_desc[0] + '.2'
-                    self.flow[interaction_step] = {
-                        'type': 'block',
-                        'block': "%s_try again 1" % self.flow['robot'][:-1],
-                        'next': step_desc[0]
-                    }
-
-                    interaction_step = step_desc[0] + '.3'
-                    self.flow[interaction_step] = {
-                        'type': 'block',
-                        'block': "%s_try again 2" % self.flow['robot'][:-1],
-                        'next': step_desc[0]
-                    }
-
-                    interaction_step = step_desc[0] + '.4'
-                    self.flow[interaction_step] = {
-                        'type': 'block',
-                        'block': "%s_very good well done 1" % self.flow['robot'][:-1],
-                        'next': step_desc[0] + '.5'
-                    }
-
-                    interaction_step = step_desc[0] + '.5'
-                    self.flow[interaction_step] = {
-                        'type': 'composite',
-                        'block': 'put_down_2_a',
-                        'next': step_desc[0] + '.6'
-                    }
-                    the_props = step_desc[2].lstrip().split(' ')
-                    self.flow[interaction_step]['sound'] = "%s_put down the %s" % (self.flow['robot'][:-1], the_props[0])
-                    if len(the_props) == 2:
-                        self.flow[interaction_step]['sound'] += " and the %s" % the_props[1]
-                    self.flow[interaction_step]['lip'] = self.flow[interaction_step]['sound'] + '.csv'
-                    self.flow[interaction_step]['sound'] = self.flow[interaction_step]['sound'] + '.mp3'
-                    self.flow[interaction_step]['correct'] = ''
-                    for p in the_props:
-                        self.flow[interaction_step]['correct'] += ' +' + p
-                    self.flow[interaction_step]['props'] = self.flow[interaction_step]['correct'].lstrip().split(' ')
-
-                    interaction_step = step_desc[0] + '.6'
-
-                    self.flow[interaction_step] = {
-                        'type': 'wait',
-                        'duration': '10',
-                        'false': step_desc[0] + '.7',
-                        'timeout': step_desc[0] + '.8',
-                        'true': step_desc[0] + '.9',
-                    }
-                    self.flow[interaction_step]['correct'] = ''
-                    for p in the_props:
-                        self.flow[interaction_step]['correct'] += ' +' + p
-
-                    self.flow[interaction_step]['props'] = self.flow[interaction_step]['correct'].lstrip().split(' ')
-
-                    interaction_step = step_desc[0] + '.7'
-                    self.flow[interaction_step] = {
-                        'type': 'block',
-                        'block': "%s_try again 1" % self.flow['robot'][:-1],
-                        'next': step_desc[0] + '.5'
-                    }
-
-                    interaction_step = step_desc[0] + '.8'
-                    self.flow[interaction_step] = {
-                        'type': 'block',
-                        'block': "%s_try again 2" % self.flow['robot'][:-1],
-                        'next': step_desc[0] + '.5'
-                    }
-
-                    interaction_step = step_desc[0] + '.9'
-                    self.flow[interaction_step] = {
-                        'type': 'block',
-                        'block': "%s_very good well done 2" % self.flow['robot'][:-1],
-                        'next': step_desc[3].lstrip()
-                    }
                 elif step_desc[1].lstrip() == 'gaze_towards':
                     self.flow[step_desc[0]] = {
                         'type': 'gaze_towards',
                         'who': step_desc[2].lstrip(),
                         'next': step_desc[3].lstrip()
                     }
-
                 elif step_desc[1].lstrip() == 'check_prop_state':
                     self.flow[step_desc[0]] = {
                         'type': 'check_prop_state',
@@ -241,11 +135,12 @@ class FlowNode:
                 elif step_desc[1].lstrip() == 'prop_event':
                     self.flow[step_desc[0]] = {
                         'type': step_desc[1].lstrip(),
-                        'activation': step_desc[2].lstrip(),
-                        'rule_sign': step_desc[3].lstrip(),
-                        'rule': step_desc[4].lstrip().split(' '),
-                        'goto': step_desc[5].lstrip(),
-                        'next': step_desc[6].lstrip(),
+                        'event_name': step_desc[2].lstrip(),
+                        'activation': step_desc[3].lstrip(),
+                        'rule_sign': step_desc[4].lstrip(),
+                        'rule': step_desc[5].lstrip().split(' '),
+                        'goto': step_desc[6].lstrip(),
+                        'next': step_desc[7].lstrip(),
                     }
 ##################################################################################
 
@@ -283,6 +178,7 @@ class FlowNode:
         current_step = 'start'
         a_prop_is_missing = False
         current_prop = []
+        self.exit_step = {}
         while current_step != 'end':
             # check if all the props are there
             # say (put_down) for those who aren't
@@ -295,85 +191,9 @@ class FlowNode:
                 if self.event_occured == True:
                     self.exit_step = current_step
                     current_step = self.event_goto
-########################################################
-            #if not current_step == 'correction_block' and '*' not in current_step:
-            #    a_prop_is_missing = False
-            #    # FlowNode.block_player.update_rifd()
-            #   for p in self.flow['props']:
-            #        if p not in FlowNode.block_player.rfids and p not in current_prop:
-            #            # check if there is a proper file name
-            #            sound_file_name = "%s_put down the %s.mp3" % (self.flow['robot'][:-1], p)
-            #            if self.sound_exist(sound_file_name):
-            #                if 'next' in self.flow[current_step]: # wierd bug correction
-            #                    self.flow['correction_block'] = {
-            #                        'type': 'composite',
-            #                        'block': self.base_path + 'blocks/'+ self.flow['robot'] + self.flow['robot'][:-1] + '_idle_1.new',
-            #                        'next': self.flow[current_step]['next'],
-            #                        'sound': "%s_put down the %s.mp3" % (self.flow['robot'][:-1], p),
-            #                        'lip': "%s_put down the %s.csv" % (self.flow['robot'][:-1], p),
-            #                        'props': []
-            #                    }
-            #                    current_step = 'correction_block'
-            #                    a_prop_is_missing = True
-            #                    FlowNode.block_player.sound_offset = 0.0
-            #    if a_prop_is_missing:
-            #        time.sleep(1.0)
-            #        continue
-            #if self.flow[current_step]['type'] == 'wait':
-            #    current_prop = []
-            #    block_name = self.base_path + 'blocks/'+ self.flow['robot'] + self.flow['robot'][:-1] + '_idle_1.new'
-            #    FlowNode.block_player.sound_filename = None
-            #    FlowNode.block_player.lip_filename = None
-            #
-            #    stopwatch_start = datetime.now()
-            #    resolution = 'timeout'
-            #    interupt_sequence = False
-            #    while (datetime.now() - stopwatch_start).total_seconds() < float(self.flow[current_step]['duration']):
-            #        # ===============
-            #        self.play_complex_block(block_name)
-            #        # ================
-            #        if FlowNode.block_player.update_rifd(): # Removed because there is only a need to change current status and not change # FlowNode.block_player.update_rifd():
-            #            print('a change')
-            #            correct_resolution = 0
-            #            for p in self.flow[current_step]['props']:
-            #                if p[0] == '-':    # pick up
-            #                    if p[1:] not in FlowNode.block_player.rfids:
-            #                        correct_resolution += 1
-            #                        current_prop.append(p[1:])
-            #                elif p[0] == '+':    # put down
-            #                    if p[1:] in FlowNode.block_player.rfids:
-            #                        correct_resolution += 1
-            #                        current_prop.append(p[1:])
-            #            if correct_resolution  == 0:
-            #                resolution = 'false'
-            #                wrong_props = [p for p in FlowNode.block_player.rfid_change if p is not None]
-            #                # first check if there are any wrong props
-            #                if len(wrong_props) > 0:
-            #                    self.flow['correction_block'] = {
-            #                        'type': 'composite',
-            #                        'block': self.base_path + 'blocks/'+ self.flow['robot'] + self.flow['robot'][:-1] + '_idle_1.new',
-            #                        'next': self.flow[current_step][resolution],
-            #                        'sound': "%s_this is a %s.mp3" % (self.flow['robot'][:-1], wrong_props[0]),
-            #                        'lip': "%s_this is a %s.csv" % (self.flow['robot'][:-1], wrong_props[0]),
-            #                        'props': []
-            #                    }
-            #                    current_step = 'correction_block'
-            #                    interupt_sequence = True
-            #                    FlowNode.block_player.sound_offset = 0.0
-            #                    break
-            #            elif correct_resolution == len(self.flow[current_step]['props']):
-            #                resolution = 'true'
-            #                break
-            #            break
-            #        time.sleep(0.1)
-            #
-            #    print('resolution:', resolution)
-            #    if not interupt_sequence:
-            #        current_step = self.flow[current_step][resolution]
-
 
 #########################################################################OG
-            elif self.flow[current_step]['type'] == 'loop_block':
+            if self.flow[current_step]['type'] == 'loop_block':
                 block_name = self.get_block_name(current_step)
                 FlowNode.block_player.sound_filename = None
                 FlowNode.block_player.lip_filename = None
@@ -400,8 +220,13 @@ class FlowNode:
 ##########################################################################
             elif self.flow[current_step]['type'] == 'prop_event':
                 self.activation = self.flow[current_step]['activation']
+                self.event_name = self.flow[current_step]['event_name']
                 self.rule_sign = self.flow[current_step]['rule_sign']
                 self.rule = self.flow[current_step]['rule']
+                if self.rule == 'wrong_in_air':
+                    self.rule = self.wrong_in_air[0]
+                elif self.rule == 'wrong_on_console':
+                    self.rule = self.wrong_on_console[0]
                 self.event_goto = self.flow[current_step]['goto']
                 current_step = self.flow[current_step]['next']
 ############################################################################
@@ -463,7 +288,7 @@ class FlowNode:
                         continue
                 else:
                     self.play_complex_block(block_name, stop_on_sound=stop_on_sound)
-                current_step = self.flow[current_step]['next']
+                current_step = self.flow[current_step]['next'][0]
 
     def get_block_name(self, current_step):
         block_name = None
