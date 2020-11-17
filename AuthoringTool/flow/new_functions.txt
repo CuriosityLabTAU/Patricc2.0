@@ -1,16 +1,33 @@
 robot, fuzzy
 path, lesson_8
 props, duck cow cat sheep donkey
-start, block, fuzzy_hello, 1 3
+start, block, fuzzy_hello, 7
 1, prop_block, fuzzy_my {} is fuzzy,name, 2
 2, loop_block, fuzzy_hello, 2, 3
 3, prop_event, all_down, on, negative, duck cow cat sheep donkey,200,4
 4, block, fuzzy_lets play, 5
 5, block, fuzzy_try again you can do it, 6
-6, block, fuzzy_try again 1, 100
+6, block, fuzzy_try again 1, 7
+7, prop_block, fuzzy_pick up the {}, sheep, 8
+8, prop_event, pick_up_sheep, on, negative, duck cow cat sheep donkey, 300, 9
+9, loop_block, fuzzy_cat, 3, 9
+10, block, fuzzy_try again you can do it_2, 100
+
 
 100, block, fuzzy_goodbye see you soon, end
 
+
+#, All down - This is a function that is activated if the child picks up a prop when they are supposed to be on the console
 200, prop_event, one_up, on, positive, duck cow cat sheep donkey, 202, 201
 201, block, fuzzy_lets learn, 201
-202, block, fuzzy_lets learn more, exit_step
+202, prop_event, all_down 2, on, negative, duck cow cat sheep donkey,200,203
+203, block, fuzzy_lets learn more, exit_step all_down
+
+#, pick up a specific prop
+300, prop_event, sheep_up, on, positive, duck cow cat donkey, 304, 302
+302, prop_block, fuzzy_this is a {}, WRONG_IN_AIR, 303
+303, loop_block, fuzzy_hello, 2, 302
+304, prop_event, sheep_up, off, positive, duck cow cat donkey, 1, 305
+305, block, fuzzy_very good thats great, exit_step pick_up_sheep
+
+
