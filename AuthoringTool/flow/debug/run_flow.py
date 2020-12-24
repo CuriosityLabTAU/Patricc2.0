@@ -56,8 +56,6 @@ class FlowNode:
                         'block': step_desc[2].lstrip(),
                         'next': step_desc[3].lstrip().split(' ')
                     }
-                    print 'we are here', step_desc[3].lstrip().split(' ')
-                    print len(step_desc[3].lstrip().split(' '))
                 elif step_desc[1].lstrip() == 'composite':
                     self.flow[step_desc[0]] = {
                         'type': 'composite',
@@ -88,6 +86,15 @@ class FlowNode:
                         'next': step_desc[4].lstrip().split(' ')
                     }
                     self.flow[step_desc[0]]['motor_commands'] = self.convert_mixed(self.flow[step_desc[0]])
+
+                elif step_desc[1].lstrip() == 'mixed_block':
+                    self.flow[step_desc[0]] = {
+                        'type': 'mixed_block',
+                        'block': step_desc[2].lstrip(),
+                        'sound': step_desc[3].lstrip(),
+                        'prop': step_desc[4].lstrip(),
+                        'next': step_desc[5].lstrip().split(' ')
+                    }
                 elif step_desc[1].lstrip() == 'gaze_towards':
                     self.flow[step_desc[0]] = {
                         'type': 'gaze_towards',
@@ -151,6 +158,7 @@ class FlowNode:
                 if self.event_occured == True:
                     self.exit_step[self.event_name] = current_step[0]
                     current_step[0] = self.event_goto
+            print "current step : ", current_step[0]
             if self.flow[current_step[0]]['type'] == 'loop_block':
                 block_name = self.get_block_name(current_step[0])
                 FlowNode.block_player.sound_filename = None
@@ -167,6 +175,7 @@ class FlowNode:
                         break
                     time.sleep(0.1)
                 current_step = self.flow[current_step[0]]['next']
+
             elif self.flow[current_step[0]]['type'] == 'prop_event':
                 self.activation = self.flow[current_step[0]]['activation']
                 self.event_name = self.flow[current_step[0]]['event_name']
@@ -178,16 +187,31 @@ class FlowNode:
                     self.rule = self.wrong_on_console[0]
                 self.event_goto = self.flow[current_step[0]]['goto']
                 current_step = self.flow[current_step[0]]['next']
+                print  "goto: ", self.event_goto, "next: ", current_step
+
             elif self.flow[current_step[0]]['type'] == 'gaze_towards':
                 print 'here', self.flow[current_step[0]]['who']
                 FlowNode.block_player.mode_publisher.publish(self.flow[current_step[0]]['who'])
                 current_step = self.flow[current_step[0]]['next']
-            elif self.flow[current_step[0]]['type'] == 'check_prop_state':
-                print "detected", FlowNode.block_player.rfids, "desired", self.flow[current_step[0]]['props_on_console']
-                if collections.Counter(FlowNode.block_player.rfids) == collections.Counter(self.flow[current_step[0]]['props_on_console']):
-                    print "all good"
+            elif self.flow[current_step[0]]['type'] == 'mixed_block':
+                block_name = self.get_block_name(current_step)
+                FlowNode.block_player.sound_filename = None
+                if self.flow[current_step[0]]['prop'] == 'WRONG_IN_AIR':
+                    self.flow[current_step[0]]['prop'] = self.wrong_in_air[0]
+                elif self.flow[current_step[0]]['prop'] == 'WRONG_ON_CONSOLE':
+                    self.flow[current_step[0]]['prop'] = self.wrong_on_console[0]
+                elif len(self.flow[current_step[0]]['prop'])<1:
+                    sound_temp = self.flow[current_step[0]]['sound']
                 else:
-                    print "prop correction"
+                    sound_temp = self.flow[current_step[0]]['sound'].format(self.flow[current_step[0]]['prop'])
+
+                FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.mp3'
+                FlowNode.block_player.lip_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.csv'
+                print "testing ", block_name, sound_temp, FlowNode.block_player.sound_filename,FlowNode.block_player.lip_filename
+                self.next_block = self.get_block_name(self.flow[current_step[0]]['next'])
+                stop_on_sound = False
+                self.play_complex_block(block_name, stop_on_sound=stop_on_sound)
+                print "mixed block current step:", current_step
                 current_step = self.flow[current_step[0]]['next']
             else:
                 block_name = self.get_block_name(current_step)
@@ -199,10 +223,10 @@ class FlowNode:
                     FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + self.flow[current_step[0]]['sound']
                     FlowNode.block_player.lip_filename = self.base_path + 'sounds/' + self.flow['path'] + self.flow[current_step[0]]['lip']
 
-                print('block: ', block_name, FlowNode.block_player.sound_filename)
+                #print('block: ', block_name, FlowNode.block_player.sound_filename)
                 self.next_block = self.get_block_name(self.flow[current_step[0]]['next'])
                 FlowNode.block_player.update_rifd()
-                print('next block:', self.next_block)
+                #print('next block:', self.next_block)
                 stop_on_sound = False #self.flow[current_step]['type'] == 'point' #TODO
                 if self.flow[current_step[0]]['type'] == 'mixed':
                     self.flow[current_step[0]]['motor_commands'] = self.convert_mixed(self.flow[current_step[0]])
@@ -237,6 +261,8 @@ class FlowNode:
                 block_name = self.base_path + 'blocks/' + self.flow['path'] + self.flow[current_step[0]]['block']
             elif self.flow[current_step[0]]['type'] == 'loop_block':
                 block_name = self.base_path + 'blocks/' + self.flow['path'] + self.flow[current_step[0]]['block']
+            elif self.flow[current_step[0]]['type'] == 'mixed_block':
+                block_name = self.base_path + 'blocks/' + self.flow['path'] + self.flow[current_step[0]]['block']
             elif self.flow[current_step[0]]['type'] == 'composite':
                 if 'blocks' not in self.flow[current_step[0]]['block']:
                     block_name = self.base_path + 'blocks/' + self.flow['path'] + self.flow[current_step[0]]['block']
@@ -256,7 +282,7 @@ class FlowNode:
         return block_name
 
     def get_point_block(self, rfid):
-        print('rfid: ', rfid)
+        #print('rfid: ', rfid)
         try:
             # rfid_pos = 1 + FlowNode.block_player.rfids.index(rfid)
             rfid_pos = 5 - FlowNode.block_player.rfids.index(rfid)
@@ -264,7 +290,7 @@ class FlowNode:
             print('ERROR: rfid %s not in list! Chaning to 1' % rfid)
             rfid_pos = 1
         block_name = self.base_path + 'blocks/' + self.flow['robot'] + 'point_%d' % rfid_pos
-        print block_name
+        #print block_name
         return block_name
 
     def play_complex_block(self, block_name, stop_on_sound=False, motor_commands=None):
@@ -369,6 +395,7 @@ class FlowNode:
         print self.event_occured
         self.wrong_in_air = np.setdiff1d(self.rule,detected_props)
         self.wrong_on_console = np.setdiff1d(detected_props, self.rule)
+        print 'wrong in air: ', self.wrong_in_air, ' wrong on console: ', self.wrong_on_console
         time.sleep(0.5)
 #################################################
 

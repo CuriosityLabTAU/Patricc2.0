@@ -104,7 +104,7 @@ class play_block():
     # block things
     def load_block(self, block_filename = 'blocks/block_spider_1'):
         self.filename = block_filename
-        print 'what went wrong : ', self.filename
+        print 'block filename ', self.filename
         with open(self.filename, 'rb') as input:
             play_block = pickle.load(input)
 
@@ -123,7 +123,7 @@ class play_block():
             self.merge_lip_and_block()
 
         self.duration = (self.full_msg_list[-1][0] - self.full_msg_list[0][0]).total_seconds()
-        print('Block: duration:', self.duration, ' sound: ', self.sound_filename)
+        #print('Block: duration:', self.duration, ' sound: ', self.sound_filename)
 
     def clean_msg_list(self, m_list):
         new_list = []

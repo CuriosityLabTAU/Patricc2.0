@@ -1,16 +1,17 @@
 robot, fuzzy
 path, lesson_8
 props, duck cow cat sheep donkey
-start, block, fuzzy_hello, 7
-1, prop_block, fuzzy_my {} is fuzzy,name, 2
+start, block, fuzzy_hello, 300
+1, prop_block, fuzzy_my {} is fuzzy,name, 11
+11, point, cat, fuzzy_this is a cat.mp3, *, 2
 2, loop_block, fuzzy_hello, 2, 3
 3, prop_event, all_down, on, negative, duck cow cat sheep donkey,200,4
 4, block, fuzzy_lets play, 5
 5, block, fuzzy_try again you can do it, 6
 6, block, fuzzy_try again 1, 7
-7, prop_block, fuzzy_pick up the {}, sheep, 8
+7, mixed_block, pick_up_2_a, fuzzy_pick up the {}, sheep, 8
 8, prop_event, pick_up_sheep, on, negative, duck cow cat sheep donkey, 300, 9
-9, loop_block, fuzzy_cat, 3, 9
+9, loop_block, fuzzy_lets play, 3, 9
 10, block, fuzzy_try again you can do it_2, 100
 
 
@@ -24,10 +25,18 @@ start, block, fuzzy_hello, 7
 203, block, fuzzy_lets learn more, exit_step all_down
 
 #, pick up a specific prop
-300, prop_event, sheep_up, on, positive, duck cow cat donkey, 304, 302
-302, prop_block, fuzzy_this is a {}, WRONG_IN_AIR, 303
-303, loop_block, fuzzy_hello, 2, 302
-304, prop_event, sheep_up, off, positive, duck cow cat donkey, 1, 305
-305, block, fuzzy_very good thats great, exit_step pick_up_sheep
+300, mixed_block, pick_up_2_a, fuzzy_pick up the {}, sheep, 301
+301, prop_event, pick_up_sheep, on, negative, duck cow cat sheep donkey, 310, 302
+302, block, fuzzy_hello, 302
+310, prop_event, pick_up_sheep, off, negative, duck cow cat sheep donkey, 303, 303
+303, prop_event, sheep_up, on, positive, duck cow cat donkey, 306, 304
+304, mixed_block, fuzzy_try again 1, fuzzy_this is a {}, WRONG_IN_AIR, 305
+305, mixed_block, put_down_1_a, fuzzy_put down the {}, WRONG_IN_AIR, 303
+306, prop_event, sheep_up, off, positive, duck cow cat donkey, 306, 307
+307, block, fuzzy_very good thats great, 308
+308, prop_event, all_down_3, on, negative, duck cow cat sheep donkey,200,1
+
+
+
 
 
