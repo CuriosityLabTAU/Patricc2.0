@@ -56,28 +56,41 @@ def mp3_2_amplitude(mp3_file_name):
     except:
         signal = audData[:]  # left sound channel. for second channel (if stereo) change indes to 1
     amplitude = np.abs(signal)
+    print amplitude
     return amplitude, rate
 
+def wav_2_amplitude(wav_file_name):
+    #read wav file
+    rate,audData=scipy.io.wavfile.read(wav_file_name)
+    try:
+        signal = audData[:,0] #left sound channel. for second channel (if stereo) change indes to 1
+    except:
+        signal = audData[:]  # left sound channel. for second channel (if stereo) change indes to 1
+    amplitude = np.abs(signal)
+    print amplitude
+    return amplitude, rate
 
-def mp3_to_lip_csv(the_path, mp3_name):
-    mp3_file_name = the_path + mp3_name
-    signal1, rate1 = mp3_2_amplitude(mp3_file_name)
+def mp3_to_lip_csv(load_path, save_path, mp3_name):
+    mp3_file_name = load_path + mp3_name
+    #signal1, rate1 = mp3_2_amplitude(mp3_file_name)
+    signal1, rate1 = wav_2_amplitude(mp3_file_name)
     #plot_signal(signal1, rate1)
     rate2 = 30 # frequency of Patricc motion player
-    norm_factor = 30 # CHANGED TODO 50 # this is the optimal norm factor I found
+    #norm_factor = 30 # CHANGED TODO 50 # this is the optimal norm factor I found
+    norm_factor = 28# CHANGED TODO 50 # this is the optimal norm factor I found
     signal2 = downsample(signal1, rate1, rate2, norm_factor)
     csv_name = mp3_name[:-4] + '.csv'
-    write2csv(signal2, the_path + csv_name)
+    write2csv(signal2, save_path + csv_name)
 
 
 def path_to_lip_csv(the_path):
-    mp3_files = [f for f in listdir(the_path) if '.mp3' in f]
+    mp3_files = [f for f in listdir(the_path) if '.wav' in f]
 
     for m in mp3_files:
-        mp3_to_lip_csv(the_path, m)
+        mp3_to_lip_csv('sounds/game_1/wav/','sounds/game_1/', m)
 
-# path_to_lip_csv('/home/curious/PycharmProjects/run_general_robot_script/roboroots/01_fuzzy/sounds/')
+#path_to_lip_csv('/home/curious/PycharmProjects/Patricc2.0/AuthoringTool/sounds/game_1/wav/')
+path_to_lip_csv('sounds/game_1/wav')
 
 
-
-mp3_to_lip_csv('sounds/system_check/', 'test_csv.mp3')
+#mp3_to_lip_csv('sounds/game_1/wav/','sounds/game_1/', 'a banana.wav')

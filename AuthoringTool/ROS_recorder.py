@@ -1,5 +1,6 @@
 from Tkinter import *
 import Tkinter as tk
+import ttk
 import rospy
 from std_msgs.msg import String
 from datetime import datetime
@@ -77,7 +78,7 @@ class Application(tk.Frame):
         self.label_robot_name.grid(column=0, row=0)
 
         self.text_robot_name = tk.Entry(self.frame_robot, width=50)
-        self.text_robot_name.insert(tk.END, '/home/gorengordon/PycharmProjects/run_general_robot_script/neo') #'hri_01')
+        self.text_robot_name.insert(tk.END, '/home/gorengordon/PycharmProjects/Patricc2.0/AuthoringTool') #'hri_01')
         self.text_robot_name.grid(column=1, row=0)
 
         self.button_robot_set = tk.Button(self.frame_robot, text='set', command=self.set_robot)
@@ -167,6 +168,7 @@ class Application(tk.Frame):
         self.lip_file_variable = StringVar(self)
         self.lip_file_variable.set(self.lip_file_names[0]) # default value
         self.text_loadlip_file = OptionMenu(self.frame_lipsync, self.lip_file_variable, *self.lip_file_names)
+
         self.text_loadlip_file.grid(column=col_ind, row=1)
         col_ind += 1
 

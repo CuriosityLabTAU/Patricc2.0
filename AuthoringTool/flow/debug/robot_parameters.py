@@ -13,7 +13,7 @@ sensor_angle_range = [[-np.pi, np.pi], [0, np.pi/2],
 #self.robot_kinect_angles = [0, 1, 0, 0, 2, 3, 4, 5] #these are the numbers that came from play_block.py
 robot_motors_no_mouth = [0, 1, 2, 4, 5, 6, 7]
 robot_motor_mouth = 4
-motor_speed = [0.4, 0.4, 2, 7, 5, 5, 5, 5]
+motor_speed = [2, 2, 2, 7, 5, 5, 5, 5]
 motor_speeds = motor_speed
 robot_kinect_angles = [0, 1, 0, 0, 4, 5, 2, 3] # complete mirror, these are the numbers that came from motion_control.py
 

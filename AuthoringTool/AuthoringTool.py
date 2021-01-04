@@ -31,7 +31,6 @@ def start_working():
         os.system('rosrun rosserial_python serial_node.py /dev/ttyACM0')
         return
 
-
     the_threads = []
 
     the_threads.append(threading.Thread(target=run_roscore()))

@@ -1,0 +1,12 @@
+robot, fuzzy
+path, game_1
+props, banana orange avocado
+start, block, snoring, 1
+1,block, hi my name is fuzzy, 2
+2,block, stomach sound, 3
+3, block, did you hear that, 4
+4, block, Im so hungry, 5
+5, can you feed me, end
+
+
+
