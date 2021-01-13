@@ -32,7 +32,7 @@ class FlowNode:
 
     def load(self, file_name='session_1.txt'):
         FlowNode.block_player.update_rifd()
-        print(FlowNode.block_player.rfids)
+        #print(FlowNode.block_player.rfids)
 
         flow_sequence = open(file_name).read().split('\n')
 
@@ -187,7 +187,7 @@ class FlowNode:
                     self.rule = self.wrong_on_console[0]
                 self.event_goto = self.flow[current_step[0]]['goto']
                 current_step = self.flow[current_step[0]]['next']
-                print  "goto: ", self.event_goto, "next: ", current_step
+                print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", self.rule,  "goto: ", self.event_goto, "next: ", current_step
 
             elif self.flow[current_step[0]]['type'] == 'gaze_towards':
                 print 'here', self.flow[current_step[0]]['who']
@@ -207,11 +207,11 @@ class FlowNode:
 
                 FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.mp3'
                 FlowNode.block_player.lip_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.csv'
-                print "testing ", block_name, sound_temp, FlowNode.block_player.sound_filename,FlowNode.block_player.lip_filename
+                #print "testing ", block_name, sound_temp, FlowNode.block_player.sound_filename,FlowNode.block_player.lip_filename
                 self.next_block = self.get_block_name(self.flow[current_step[0]]['next'])
                 stop_on_sound = False
                 self.play_complex_block(block_name, stop_on_sound=stop_on_sound)
-                print "mixed block current step:", current_step
+                #print "mixed block current step:", current_step
                 current_step = self.flow[current_step[0]]['next']
             else:
                 block_name = self.get_block_name(current_step)
@@ -278,7 +278,7 @@ class FlowNode:
                 elif self.flow[current_step[0]]['prop'] == 'WRONG_ON_CONSOLE':
                     self.flow[current_step[0]]['prop'] = self.wrong_on_console[0]
                 block_name = self.base_path + 'blocks/' + self.flow['path'] + self.flow[current_step[0]]['block'].format(self.flow[current_step[0]]['prop'])
-                print "testing", block_name
+                #print "testing", block_name
         return block_name
 
     def get_point_block(self, rfid):
@@ -381,7 +381,6 @@ class FlowNode:
         self.wrong_in_air = []
         self.wrong_on_console = []
         detected_props = [x for x in FlowNode.block_player.rfids if x != None]
-        print 'detected: ', detected_props, ' rule: ', self.rule
         if set(detected_props)==set(self.rule):
             if self.rule_sign == 'positive':
                 self.event_occured = True
@@ -392,10 +391,12 @@ class FlowNode:
                 self.event_occured = True
             elif self.rule_sign == 'positive':
                 self.event_occured = False
-        print self.event_occured
+        print 'detected: ', detected_props, ' rule: ', self.rule, 'event occured: ', self.event_occured
         self.wrong_in_air = np.setdiff1d(self.rule,detected_props)
         self.wrong_on_console = np.setdiff1d(detected_props, self.rule)
         print 'wrong in air: ', self.wrong_in_air, ' wrong on console: ', self.wrong_on_console
+        if self.event_occured==True:
+            self.activation = "off"
         time.sleep(0.5)
 #################################################
 

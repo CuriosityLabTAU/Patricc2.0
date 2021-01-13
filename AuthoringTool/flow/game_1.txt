@@ -1,12 +1,24 @@
 robot, fuzzy
 path, game_1
-props, banana orange avocado
+props, banana orange avocado strawberry lemon
+
 start, block, snoring, 1
-1,block, hi my name is fuzzy, 2
-2,block, stomach sound, 3
-3, block, did you hear that, 4
-4, block, Im so hungry, 5
-5, can you feed me, end
+1, block, yawn, 2
+2,block, hi my name is fuzzy, 3
+3,block, stomach sound, 4
+4, block, did you hear that that was my tummy, 5
+5, block, Im so hungry, 6
+6, block, can you feed me, 61
+61, loop_block, fuzzy_idle_1.new, 2, 62
+62, block,fantastic, 7
+7, block, mmm can I have a lemon please, 8
+8, prop_event, pick_up_lemon, on, negative, lemon banana orange avocado strawberry, 101, 9
+9, loop_block, fuzzy_idle_1.new, 2, 9
+10, block, bye bye, end
 
-
+101, prop_event, pick_up_lemon_2, on, negative, banana orange avocado strawberry, 102, 106
+102, prop_block, that isnt a {}, lemon, 104
+104, prop_block, that is a {}, WRONG_IN_AIR, 105
+105, loop_block, fuzzy_idle, 5,8
+106, block, mmm I love lemon, 10
 

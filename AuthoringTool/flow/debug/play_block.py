@@ -104,7 +104,7 @@ class play_block():
     # block things
     def load_block(self, block_filename = 'blocks/block_spider_1'):
         self.filename = block_filename
-        print 'block filename ', self.filename
+        #print 'block filename ', self.filename
         with open(self.filename, 'rb') as input:
             play_block = pickle.load(input)
 
