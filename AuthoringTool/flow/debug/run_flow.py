@@ -23,6 +23,7 @@ class FlowNode:
         self.activation = 'off'
         self.rule_sign = []
         self.rule = []
+        self.play_sound = 'on'
         self.event_goto = 'start'
         self.base_path = '../'
 
@@ -106,7 +107,8 @@ class FlowNode:
                         'type': step_desc[1].lstrip(),
                         'block': step_desc[2].lstrip(),
                         'duration': step_desc[3].lstrip(),
-                        'next': step_desc[4].lstrip().split(' ')
+                        'play_sound': step_desc[4].lstrip(),
+                        'next': step_desc[5].lstrip().split(' ')
                     }
                 elif step_desc[1].lstrip() == 'prop_event':
                     self.flow[step_desc[0]] = {
@@ -144,7 +146,7 @@ class FlowNode:
         return interupt
 
     def run(self):
-        time.sleep(2)
+        time.sleep(0.2)
         FlowNode.block_player.update_rifd()
         current_step = ['start']
         a_prop_is_missing = False
@@ -158,9 +160,11 @@ class FlowNode:
                 if self.event_occured == True:
                     self.exit_step[self.event_name] = current_step[0]
                     current_step[0] = self.event_goto
+                    self.activation = "off"
             print "current step : ", current_step[0]
             if self.flow[current_step[0]]['type'] == 'loop_block':
-                block_name = self.get_block_name(current_step[0])
+                block_name = self.get_block_name(current_step)
+                print 'loop block name: ', block_name
                 FlowNode.block_player.sound_filename = None
                 FlowNode.block_player.lip_filename = None
 
@@ -169,11 +173,12 @@ class FlowNode:
                 interupt_sequence = False
                 while (datetime.now() - stopwatch_start).total_seconds() < float(self.flow[current_step[0]]['duration']):
                     # ===============
-                    self.play_complex_block(block_name)
+                    #self.play_complex_block(block_name, self.flow[current_step[0]]['play_sound'])
+                    self.play_complex_block(block_name, duration=float(self.flow[current_step[0]]['duration']), activation=self.activation, rule=self.rule, rule_sign=self.rule_sign)
                     # ================
+                    self.check_event()
                     if self.event_occured == True:
                         break
-                    time.sleep(0.1)
                 current_step = self.flow[current_step[0]]['next']
 
             elif self.flow[current_step[0]]['type'] == 'prop_event':
@@ -187,7 +192,7 @@ class FlowNode:
                     self.rule = self.wrong_on_console[0]
                 self.event_goto = self.flow[current_step[0]]['goto']
                 current_step = self.flow[current_step[0]]['next']
-                print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", self.rule,  "goto: ", self.event_goto, "next: ", current_step
+                print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
 
             elif self.flow[current_step[0]]['type'] == 'gaze_towards':
                 print 'here', self.flow[current_step[0]]['who']
@@ -278,7 +283,7 @@ class FlowNode:
                 elif self.flow[current_step[0]]['prop'] == 'WRONG_ON_CONSOLE':
                     self.flow[current_step[0]]['prop'] = self.wrong_on_console[0]
                 block_name = self.base_path + 'blocks/' + self.flow['path'] + self.flow[current_step[0]]['block'].format(self.flow[current_step[0]]['prop'])
-                #print "testing", block_name
+            #print "testing", block_name
         return block_name
 
     def get_point_block(self, rfid):
@@ -293,13 +298,13 @@ class FlowNode:
         #print block_name
         return block_name
 
-    def play_complex_block(self, block_name, stop_on_sound=False, motor_commands=None):
+    def play_complex_block(self, block_name, stop_on_sound=False, motor_commands=None, play_sound='on', duration=500, activation='off', rule=[], rule_sign=[]):
         print block_name
         FlowNode.block_player.load_block(block_name)
         new_motor_commands = FlowNode.block_player.stitch_blocks(block_before=self.prev_block,
                                                         block_after=self.next_block,
                                                         motor_commands=motor_commands)
-        FlowNode.block_player.play_editted(motor_commands=new_motor_commands, stop_on_sound=stop_on_sound)
+        FlowNode.block_player.play_editted(motor_commands=new_motor_commands, stop_on_sound=stop_on_sound, play_sound=play_sound, duration=duration, activation=activation, rule=rule, rule_sign=rule_sign)
         self.prev_block = block_name
 
     def convert_mixed(self, the_block=None):
@@ -376,7 +381,6 @@ class FlowNode:
         new_motor_commands[motor_commands_1.shape[0]:, 0] += motor_commands_1[-1, 0]
         return new_motor_commands
 
-##################################################OG
     def check_event(self):
         self.wrong_in_air = []
         self.wrong_on_console = []
@@ -395,11 +399,7 @@ class FlowNode:
         self.wrong_in_air = np.setdiff1d(self.rule,detected_props)
         self.wrong_on_console = np.setdiff1d(detected_props, self.rule)
         print 'wrong in air: ', self.wrong_in_air, ' wrong on console: ', self.wrong_on_console
-        if self.event_occured==True:
-            self.activation = "off"
-        time.sleep(0.5)
-#################################################
-
+        time.sleep(0.1)
 
 #flow = FlowNode()
 # === demo ====
