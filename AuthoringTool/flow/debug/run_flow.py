@@ -191,7 +191,7 @@ class FlowNode:
                 elif self.rule == 'wrong_on_console':
                     self.rule = self.wrong_on_console[0]
                 self.event_goto = self.flow[current_step[0]]['goto']
-                current_step = self.flow[current_step[0]]['next']
+                current_step = list(self.flow[current_step[0]]['next'])
                 print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
 
             elif self.flow[current_step[0]]['type'] == 'gaze_towards':
@@ -202,13 +202,17 @@ class FlowNode:
                 block_name = self.get_block_name(current_step)
                 FlowNode.block_player.sound_filename = None
                 if self.flow[current_step[0]]['prop'] == 'WRONG_IN_AIR':
-                    self.flow[current_step[0]]['prop'] = self.wrong_in_air[0]
+                    #self.flow[current_step[0]]['prop'] = self.wrong_in_air[0]
+                    temp_prop = self.wrong_in_air[0]
                 elif self.flow[current_step[0]]['prop'] == 'WRONG_ON_CONSOLE':
-                    self.flow[current_step[0]]['prop'] = self.wrong_on_console[0]
+                    #self.flow[current_step[0]]['prop'] = self.wrong_on_console[0]
+                    temp_prop = self.wrong_on_console[0]
                 elif len(self.flow[current_step[0]]['prop'])<1:
                     sound_temp = self.flow[current_step[0]]['sound']
-                else:
-                    sound_temp = self.flow[current_step[0]]['sound'].format(self.flow[current_step[0]]['prop'])
+                #else:
+                #sound_temp = self.flow[current_step[0]]['sound'].format(self.flow[current_step[0]]['prop'])
+                sound_temp = self.flow[current_step[0]]['sound'].format(temp_prop)
+
 
                 FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.mp3'
                 FlowNode.block_player.lip_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.csv'
