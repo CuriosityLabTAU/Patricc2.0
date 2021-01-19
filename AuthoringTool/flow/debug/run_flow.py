@@ -127,6 +127,14 @@ class FlowNode:
                         'prop' : step_desc[3].lstrip(),
                         'next': step_desc[4].lstrip().split(' ')
                     }
+                elif step_desc[1].lstrip() == 'rfid_block':
+                    self.flow[step_desc[0]] = {
+                        'type': step_desc[1].lstrip(),
+                        'prop': step_desc[2].lstrip(),
+                        'block':step_desc[4].lstrip(),
+                        'sound': step_desc[5].lstrip(),
+                        'next': step_desc[6].lstrip()
+                    }
                 elif step_desc[0].lstrip() == '#':
                     pass
                 else:
@@ -298,7 +306,9 @@ class FlowNode:
         except:
             print('ERROR: rfid %s not in list! Chaning to 1' % rfid)
             rfid_pos = 1
-        block_name = self.base_path + 'blocks/' + self.flow['robot'] + 'point_%d' % rfid_pos
+        #block_name = self.base_path + 'blocks/' + self.flow['robot'] + 'point_%d' % rfid_pos
+        block_name = self.base_path + 'blocks/' + self.flow['robot'] + 'hint_%d' % rfid_pos
+
         #print block_name
         return block_name
 

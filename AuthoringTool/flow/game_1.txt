@@ -2,8 +2,9 @@ robot, fuzzy
 path, game_1
 props, banana orange avocado strawberry lemon
 
-start, block, yawn, 200
+start, block, yawn, 10
 1, block, yawn, 2
+28, point, orange, this is a orange.mp3, *, 6
 2,block, hi my name is fuzzy, 200
 200, prop_event, put_down_all_props, on, negative, banana orange avocado strawberry lemon, 201, 3
 3,block, stomach sound, 4
