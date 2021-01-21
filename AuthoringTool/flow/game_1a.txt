@@ -4,19 +4,18 @@ props, banana orange avocado strawberry lemon
 
 start, block, snoring, 1
 1, block, yawn, 2
-28, point, orange, this is a orange.mp3, *, 6
 2,block, hi my name is fuzzy, 200
 200, prop_event, put_down_all_props, on, negative, banana orange avocado strawberry lemon, 201, 3
 3,block, stomach sound, 4
 4, block, did you hear that that was my tummy, 5
 5, block, Im so hungry, 6
-6, block, can you feed me, 14
-14, loop_block, idle_1, 2, on, 62
-62, block,fantastic, 7
-7, block, mmm can I have a lemon please, 8
-71, block, can you give me a lemon, 8
-8, prop_event, pick_up_lemon, on, negative, lemon banana orange avocado strawberry, 101, 9
-9, loop_block, idle_2, 10, on, 71
+6, block, can you feed me, 7
+7, loop_block, idle_1, 2, on, 8
+8, block,fantastic, 9
+9, block, mmm can I have a lemon please, 10
+91, block, can you give me a lemon, 8
+10, prop_event, pick_up_lemon, on, negative, lemon banana orange avocado strawberry, 101, 9
+9, loop_block, idle_2, 10, on, 91
 
 10, prop_event, pick_up_anything, on, negative, lemon banana orange avocado strawberry, 12, 111
 111, block, pick up a fruit you like, 11
@@ -26,7 +25,7 @@ start, block, snoring, 1
 
 101, prop_event, pick_up_lemon_2, on, negative, banana orange avocado strawberry, 102, 106
 102, prop_block, that isnt a {}, lemon, 104
-104, prop_block, that is a {}, WRONG_IN_AIR, 105
+104, prop_block, this is a {}, WRONG_IN_AIR, 105
 105, loop_block, idle_1, 2, on, 71
 106, prop_event, pick_up_lemon_2, off, negative, banana orange avocado strawberry, 102, 107
 107, block, mmm I love lemon, 108
@@ -38,3 +37,4 @@ start, block, snoring, 1
 204, block, great, 205
 205, prop_event, put_down_all_props, on, negative, lemon banana orange avocado strawberry, 201, exit_step put_down_all_props
 
+28, point, orange, this is a orange.mp3, *, 6
