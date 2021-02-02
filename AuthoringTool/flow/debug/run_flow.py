@@ -169,7 +169,7 @@ class FlowNode:
                     self.exit_step[self.event_name] = current_step[0]
                     current_step[0] = self.event_goto
                     self.activation = "off"
-            print "current step : ", current_step[0]
+            print "current step : ", current_step[0], 'new', self.flow[current_step[0]]['type']
             if self.flow[current_step[0]]['type'] == 'loop_block':
                 block_name = self.get_block_name(current_step)
                 print 'loop block name: ', block_name
@@ -194,10 +194,13 @@ class FlowNode:
                 self.event_name = self.flow[current_step[0]]['event_name']
                 self.rule_sign = self.flow[current_step[0]]['rule_sign']
                 self.rule = self.flow[current_step[0]]['rule']
-                if self.rule == 'wrong_in_air':
+                if self.rule[0] == 'WRONG_IN_AIR':
                     self.rule = self.wrong_in_air[0]
-                elif self.rule == 'wrong_on_console':
-                    self.rule = self.wrong_on_console[0]
+                elif self.rule[0] == 'WRONG_ON_CONSOLE':
+                    self.rule = self.wrong_on_console
+                    print "rule = ", self.rule
+                elif self.rule[0] == 'NONE':
+                    self.rule = []
                 self.event_goto = self.flow[current_step[0]]['goto']
                 current_step = list(self.flow[current_step[0]]['next'])
                 print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
@@ -230,7 +233,6 @@ class FlowNode:
                 self.play_complex_block(block_name, stop_on_sound=stop_on_sound)
                 #print "mixed block current step:", current_step
                 current_step = self.flow[current_step[0]]['next']
-
             elif self.flow[current_step[0]]['type'] == 'rfid_block':
                 block_name = self.get_block_name(current_step)
                 FlowNode.block_player.sound_filename = None
