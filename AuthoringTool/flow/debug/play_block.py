@@ -279,6 +279,8 @@ class play_block():
                 break
             if activation=="on":
                 if self.check_prop_event(rule, rule_sign):
+                    a = self.check_prop_event(rule, rule_sign)
+                    print 'rule is ', a
                     pygame.mixer.music.stop()
                     break
             new_item = motor_commands[iter, :]
@@ -466,16 +468,31 @@ class play_block():
 
     def check_prop_event(self, rule, rule_sign):
         detected_props = [x for x in self.rfids if x != None]
+        if rule_sign=='is_on_console':
+            if set(rule).issubset(set(detected_props))==True:
+                prop_event_occured = True
+            else:
+                prop_event_occured = False
+        if rule_sign=='is_not_on_console':
+            if set(rule).issubset(set(detected_props))==True:
+                prop_event_occured = False
+            else:
+                prop_event_occured = True
         if set(detected_props)==set(rule):
             if rule_sign == 'positive':
                 prop_event_occured = True
             elif rule_sign == 'negative':
                 prop_event_occured = False
+            elif rule_sign == 'is_change':
+                prop_event_occured = True
         else:
             if rule_sign == 'negative':
                 prop_event_occured = True
             elif rule_sign == 'positive':
                 prop_event_occured = False
+            elif rule_sign == 'is_change':
+                prop_event_occured = False
+        print 'prop event check in play block = ', prop_event_occured
         return prop_event_occured
 
 

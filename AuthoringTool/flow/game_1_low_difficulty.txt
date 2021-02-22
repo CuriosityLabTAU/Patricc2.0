@@ -2,7 +2,7 @@ robot, fuzzy
 path, game_1
 props, banana orange avocado strawberry lemon
 
-start, block, yawn, 13
+start, block, yawn, 7
 1, block, yawn, 2
 2,block, hi my name is fuzzy, 200
 200, prop_event, put_down_all_props, on, negative, banana orange avocado strawberry lemon, 201, 3
@@ -13,11 +13,16 @@ start, block, yawn, 13
 61, loop_block, idle_1, 2, on, 62
 62, block,fantastic, 7
 
-7, prop_event, put_down_all_props, off, negative, banana orange avocado strawberry lemon, 201, 72
-72, block, mmm can I have a lemon please, 8
-71, block, can you give me a lemon, 8
+7, prop_event, put_down_all_props, off, negative, banana orange avocado strawberry lemon, 201, 73
+73, block, what do i want to eat now, 74
+74, rfid_block, lemon, point_c, a lemon thinking, 75
+75, rfid_block, avocado, point_c, an avocado thinking, 76
+76, rfid_block, strawberry, point_c, a strawberry thinking, 77
+77, block, i know, 72
+72, block, can you give me a lemon, 8
+71, block, mmm can I have a lemon please, 8
 8, prop_event, pick_up_lemon, on, negative, lemon banana orange avocado strawberry, 101, 91
-91, rfid_block, lemon, hint, idle_1, 9
+91, rfid_block, lemon, lean, idle_1, 9
 9, loop_block, idle_2, 10, on, 71
 
 10, prop_event, pick_up_anything, on, negative, lemon banana orange avocado strawberry, 12, 1112

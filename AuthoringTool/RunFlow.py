@@ -209,8 +209,10 @@ class SessionGUI(tk.Frame):
     def check_props(self):
         found_props = FlowNode.block_player.rfids
         found_all = True
-        for i in range(len(self.props_name_variable)):
-            if self.props_name_variable[i].get() in found_props:
+        #for i in range(len(self.props_name_variable)):
+        for i in range(len(self.flow['props'])):
+            #if self.props_name_variable[i].get() in found_props:
+            if self.flow['props'][i] in found_props:
                 #self.prop_check_image[i] = tk.PhotoImage(file='./images/v.png')
 
                 self.original = Image.open('./images/v.png')
