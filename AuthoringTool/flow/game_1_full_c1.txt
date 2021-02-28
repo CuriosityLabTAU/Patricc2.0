@@ -1,0 +1,68 @@
+robot, fuzzy
+path, game_1
+props, banana orange avocado strawberry lemon
+
+#, introduction
+start, loop_block, snoring, 5, on, b_1
+a_1, block, yawn, a_2
+a_2,block, hi my name is fuzzy, a_3
+a_3,block, stomach sound, a_4
+a_4, block, did you hear that that was my tummy, a_5
+a_5, block, Im so hungry, a_6
+a_6, block, can you feed me, a_7
+a_7, loop_block, idle_1, 2, on, a_8
+a_8, block,fantastic, b_1
+
+#, set props on console
+b_1, block, can you get the fruit from the basket, b_2
+b_2, Put them one by one on the plates, b_3
+b_3, prop_event, check_all_on_console, on, positive, banana orange avocado strawberry lemon, b_end, b_5
+b_5, prop_event, detect_change, on, negative, CURRENT,b_6, b_7
+b_6, mixed_block, waiting, a {}, WRONG_ON_CONSOLE, b_3
+b_7, loop_block, idle_1, 5, on, b_5
+b_end, block, great, end
+
+
+88, prop_event, test, on, is_on_console, banana avocado, 89, 90
+89, block, great, 88
+90, block, nononoo, 88
+
+
+8, block, great, 20
+
+9, prop_event, remove_banana, on, positive, orange avocado strawberry lemon, 91, 10
+91, prop_event, remove_orange, on, positive, avocado strawberry lemon, 92, 10
+92, prop_event, remove_avocado, on, positive, strawberry lemon, 93, 10
+93, prop_event, remove_strawberry, on, positive, lemon, 94, 10
+94, prop_event, remove_lemon, on, positive, NONE, 100, 10
+
+10, mixed_block, put_down_1_a, a {}, WRONG_ON_CONSOLE, 11
+11, loop_block, idle_1, 20, on, 11
+
+
+#, remove props from console
+20, prop_event, all_in_basket, on, positive, NONE, 100, 21
+21, prop_event, remove_banana, on, is_on_console, banana, 30, 22
+22, prop_event, remove_orange, on, is_on_console, orange, 31, 23
+23, prop_event, remove_strawberry, on, is_on_console, strawberry, 32, 24
+24, prop_event, remove_avocado, on, is_on_console, avocado, 33, 25
+25, prop_event, remove_lemon, on, is_on_console, lemon, 34, 20
+
+30, block, can you give me a banana, 301
+301, prop_event, banana_up, on, is_not_on_console, banana, 20, 35
+31, block, can you give me a orange, 311
+311, prop_event, orange_up, on, is_not_on_console, orange, 20, 35
+32, block, can you give me a strawberry, 321
+321, prop_event, strawberry_up, on, is_not_on_console, strawberry, 20, 35
+33, block, can you give me a avocado, 331
+331, prop_event, avocado_up, on, is_not_on_console, avocado, 20, 35
+34, block, can you give me a lemon, 341
+341, prop_event, lemon_up, on, is_not_on_console, lemon, 20, 35
+
+
+35, loop_block, idle_1, 5, on, 20
+
+
+
+
+100, block, great, end

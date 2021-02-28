@@ -468,30 +468,59 @@ class play_block():
 
     def check_prop_event(self, rule, rule_sign):
         detected_props = [x for x in self.rfids if x != None]
+        prop_event_occured = False
+
         if rule_sign=='is_on_console':
             if set(rule).issubset(set(detected_props))==True:
                 prop_event_occured = True
             else:
                 prop_event_occured = False
-        if rule_sign=='is_not_on_console':
+        elif rule_sign=='is_not_on_console':
             if set(rule).issubset(set(detected_props))==True:
                 prop_event_occured = False
             else:
                 prop_event_occured = True
-        if set(detected_props)==set(rule):
-            if rule_sign == 'positive':
+        elif rule_sign == 'positive':
+            if set(detected_props)==set(rule):
                 prop_event_occured = True
-            elif rule_sign == 'negative':
+            else:
                 prop_event_occured = False
-            elif rule_sign == 'is_change':
+        elif rule_sign == 'negative':
+            if set(detected_props)==set(rule):
+                prop_event_occured = False
+            else:
                 prop_event_occured = True
-        else:
-            if rule_sign == 'negative':
+        elif rule_sign == 'is_change':
+            if set(detected_props)==set(rule):
                 prop_event_occured = True
-            elif rule_sign == 'positive':
-                prop_event_occured = False
-            elif rule_sign == 'is_change':
-                prop_event_occured = False
+            else:
+                self.even_occured = False
+
+#        if rule_sign=='is_on_console':
+#            if set(rule).issubset(set(detected_props))==True:
+#                prop_event_occured = True
+#            else:
+#                prop_event_occured = False
+#        if rule_sign=='is_not_on_console':
+#            if set(rule).issubset(set(detected_props))==True:
+#                prop_event_occured = False
+#            else:
+#                prop_event_occured = True
+#        if set(detected_props)==set(rule):
+#            if rule_sign == 'positive':
+#                prop_event_occured = True
+#            elif rule_sign == 'negative':
+#                prop_event_occured = False
+#            elif rule_sign == 'is_change':
+#                prop_event_occured = True
+#        else:
+#            if rule_sign == 'negative':
+#                prop_event_occured = True
+#            elif rule_sign == 'positive':
+#                prop_event_occured = False
+#            elif rule_sign == 'is_change':
+#                prop_event_occured = False
+
         print 'prop event check in play block = ', prop_event_occured
         return prop_event_occured
 

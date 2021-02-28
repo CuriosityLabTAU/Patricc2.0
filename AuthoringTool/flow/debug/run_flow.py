@@ -17,6 +17,7 @@ class FlowNode:
         self.prev_block = None
         self.next_block = None
         self.event_occured = False
+        self.event_name = []
         self.exit_step = 'start'
         self.wrong_in_air = []
         self.wrong_on_console = []
@@ -202,8 +203,11 @@ class FlowNode:
                     print "rule = ", self.rule
                 elif self.rule[0] == 'NONE':
                     self.rule = []
-                if self.rule_sign == 'is_change':
+                elif self.rule[0] == 'CURRENT':
                     detected_props = [x for x in FlowNode.block_player.rfids if x != None]
+                    self.rule = detected_props
+                if self.rule_sign == 'is_change':
+
                     self.rule = detected_props
                 self.event_goto = self.flow[current_step[0]]['goto']
                 current_step = list(self.flow[current_step[0]]['next'])
@@ -216,18 +220,24 @@ class FlowNode:
             elif self.flow[current_step[0]]['type'] == 'mixed_block':
                 block_name = self.get_block_name(current_step)
                 FlowNode.block_player.sound_filename = None
-                if self.flow[current_step[0]]['prop'] == 'WRONG_IN_AIR':
-                    #self.flow[current_step[0]]['prop'] = self.wrong_in_air[0]
-                    temp_prop = self.wrong_in_air[0]
-                elif self.flow[current_step[0]]['prop'] == 'WRONG_ON_CONSOLE':
-                    #self.flow[current_step[0]]['prop'] = self.wrong_on_console[0]
-                    temp_prop = self.wrong_on_console[0]
-                elif len(self.flow[current_step[0]]['prop'])<1:
-                    sound_temp = self.flow[current_step[0]]['sound']
-                #else:
-                #sound_temp = self.flow[current_step[0]]['sound'].format(self.flow[current_step[0]]['prop'])
-                sound_temp = self.flow[current_step[0]]['sound'].format(temp_prop)
 
+                if self.flow[current_step[0]]['prop'] == 'WRONG_IN_AIR':
+                    if len(self.wrong_in_air)>0:
+                        temp_prop = self.wrong_in_air[0]
+                        sound_temp = self.flow[current_step[0]]['sound'].format(temp_prop)
+                        block_name = self.get_block_name(current_step)
+                    else:
+                        sound_temp = 'breath'
+                        block_name = './blocks/game_1/waiting'
+
+                elif self.flow[current_step[0]]['prop'] == 'WRONG_ON_CONSOLE':
+                    if len(self.wrong_on_console)>0:
+                        temp_prop = self.wrong_on_console[0]
+                        sound_temp = self.flow[current_step[0]]['sound'].format(temp_prop)
+                        block_name = self.get_block_name(current_step)
+                    else:
+                        sound_temp = 'breath'
+                        block_name = './blocks/game_1/waiting'
 
                 FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.mp3'
                 FlowNode.block_player.lip_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.csv'
@@ -430,31 +440,69 @@ class FlowNode:
         self.wrong_in_air = []
         self.wrong_on_console = []
         detected_props = [x for x in FlowNode.block_player.rfids if x != None]
+
         if self.rule_sign=='is_on_console':
             if set(self.rule).issubset(set(detected_props))==True:
                 self.event_occured = True
             else:
                 self.event_occured = False
-        if self.rule_sign=='is_not_on_console':
+        elif self.rule_sign=='is_not_on_console':
             if set(self.rule).issubset(set(detected_props))==True:
                 self.event_occured = False
             else:
                 self.event_occured = True
-        if set(detected_props)==set(self.rule):
-            if self.rule_sign == 'positive':
+        elif self.rule_sign == 'positive':
+            if set(detected_props)==set(self.rule):
                 self.event_occured = True
-            elif self.rule_sign == 'negative':
+            else:
                 self.event_occured = False
-            elif self.rule_sign == 'is_change':
-                self,even_occured = True
-        else:
-            if self.rule_sign == 'negative':
+        elif self.rule_sign == 'negative':
+            if set(detected_props)==set(self.rule):
+                self.event_occured = False
+            else:
                 self.event_occured = True
-            elif self.rule_sign == 'positive':
-                self.event_occured = False
-            elif self.rule_sign == 'is_change':
-                self,even_occured = False
-        print 'detected: ', detected_props, ' rule: ', self.rule, 'event occured: ', self.event_occured
+        elif self.rule_sign == 'is_change':
+            if set(detected_props)==set(self.rule):
+                self.even_occured = True
+            else:
+                self.even_occured = False
+
+
+#        if self.rule_sign=='is_on_console':
+#            if set(self.rule).issubset(set(detected_props))==True:
+#                self.event_occured = True
+#            else:
+#                self.event_occured = False
+#        if self.rule_sign=='is_not_on_console':
+#            if set(self.rule).issubset(set(detected_props))==True:
+#                self.event_occured = False
+#            else:
+#                self.event_occured = True
+#        if set(detected_props)==set(self.rule):
+#            if self.rule_sign == 'positive':
+#                self.event_occured = True
+#            elif self.rule_sign == 'negative':
+#                self.event_occured = False
+#            elif self.rule_sign == 'is_change':
+#                self,even_occured = True
+#        else:
+#            if self.rule_sign == 'negative':
+#                self.event_occured = True
+#            elif self.rule_sign == 'positive':
+#                self.event_occured = False
+#            elif self.rule_sign == 'is_change':
+#                self,even_occured = False
+        print 'event: ', self.event_name, ' detected: ', detected_props, ' rule: ', self.rule, 'event occured: ', self.event_occured
+        print 'what is ', np.setdiff1d(self.flow['props'],self.rule)
+
+        if self.rule_sign == 'positive':
+            self.wrong_in_air = np.setdiff1d(self.rule,detected_props)
+            self.wrong_on_console = np.setdiff1d(detected_props, self.rule)
+        elif self.rule_sign == 'negative':
+            self.wrong_in_air = np.setdiff1d(np.setdiff1d(self.flow['props'],self.rule), detected_props)
+            self.wrong_on_console = np.setdiff1d(self.rule, detected_props)
+
+
         self.wrong_in_air = np.setdiff1d(self.rule,detected_props)
         self.wrong_on_console = np.setdiff1d(detected_props, self.rule)
         print 'wrong in air: ', self.wrong_in_air, ' wrong on console: ', self.wrong_on_console
