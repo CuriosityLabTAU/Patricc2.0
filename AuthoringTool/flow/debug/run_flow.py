@@ -252,10 +252,12 @@ class FlowNode:
                 FlowNode.block_player.sound_filename = None
                 FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + self.flow[current_step[0]]['sound'] + '.mp3'
                 FlowNode.block_player.lip_filename = self.base_path + 'sounds/' + self.flow['path'] + self.flow[current_step[0]]['sound'] + '.csv'
-                self.next_block = self.get_block_name(self.flow[current_step[0]]['next'])
+                print 'check 1:', current_step[0], ',', self.flow[current_step[0]]['next']
+                self.next_block = self.get_block_name([self.flow[current_step[0]]['next']])
                 FlowNode.block_player.update_rifd()
                 stop_on_sound = False #self.flow[current_step]['type'] == 'point' #TODO
-                self.play_complex_block(block_name, stop_on_sound=stop_on_sound, activation=self.activation)
+                #self.play_complex_block(block_name, stop_on_sound=stop_on_sound, activation=self.activation)
+                self.play_complex_block(block_name, activation=self.activation, rule=self.rule, rule_sign=self.rule_sign)
                 print 'next step is ', self.flow[current_step[0]]['next']
                 current_step = [self.flow[current_step[0]]['next']]
 
@@ -495,12 +497,12 @@ class FlowNode:
         print 'event: ', self.event_name, ' detected: ', detected_props, ' rule: ', self.rule, 'event occured: ', self.event_occured
         print 'what is ', np.setdiff1d(self.flow['props'],self.rule)
 
-        if self.rule_sign == 'positive':
-            self.wrong_in_air = np.setdiff1d(self.rule,detected_props)
-            self.wrong_on_console = np.setdiff1d(detected_props, self.rule)
-        elif self.rule_sign == 'negative':
-            self.wrong_in_air = np.setdiff1d(np.setdiff1d(self.flow['props'],self.rule), detected_props)
-            self.wrong_on_console = np.setdiff1d(self.rule, detected_props)
+#        if self.rule_sign == 'positive':
+#            self.wrong_in_air = np.setdiff1d(self.rule,detected_props)
+#            self.wrong_on_console = np.setdiff1d(detected_props, self.rule)
+#        elif self.rule_sign == 'negative':
+#            self.wrong_in_air = np.setdiff1d(np.setdiff1d(self.flow['props'],self.rule), detected_props)
+#            self.wrong_on_console = np.setdiff1d(self.rule, detected_props)
 
 
         self.wrong_in_air = np.setdiff1d(self.rule,detected_props)
