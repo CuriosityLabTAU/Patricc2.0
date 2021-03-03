@@ -33,11 +33,11 @@ def start_working():
 
     the_threads = []
 
-    #the_threads.append(threading.Thread(target=run_roscore()))
+    the_threads.append(threading.Thread(target=run_roscore()))
     the_threads.append(threading.Thread(target=run_kinect))
     the_threads.append(threading.Thread(target=run_rfid))
     the_threads.append(threading.Thread(target=run_robot_angles))
-    #the_threads.append(threading.Thread(target=run_expose))
+    the_threads.append(threading.Thread(target=run_expose))
     the_threads.append(threading.Thread(target=run_motion_control))
     the_threads.append(threading.Thread(target=run_application))
 

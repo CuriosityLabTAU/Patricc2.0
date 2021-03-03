@@ -92,8 +92,6 @@ z_5, block, great, z_6
 z_6, prop_event, put_down_all_props, on, negative, lemon banana orange avocado strawberry, z_2, exit_step put_down_all_props
 
 
-
-
 7, prop_event, put_down_all_props, off, negative, banana orange avocado strawberry lemon, 201, 73
 73, block, what do i want to eat now, 74
 74, rfid_block, lemon, point_c, a lemon thinking, 75

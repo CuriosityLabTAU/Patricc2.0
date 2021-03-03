@@ -1,0 +1,20 @@
+robot, fuzzy
+path, Fuzzy_contest
+props, orange
+start, block, Fuzzy contest 01, 1
+1, loop_block, idle, 1, on, 2
+2, block, Fuzzy contest 02, 3
+3, loop_block, idle, 1, on, 4
+4, block, Fuzzy contest 03, 5
+5, loop_block, idle, 1, on, 6
+6, block, Fuzzy contest 04, 7
+7, loop_block, idle, 1, on, 8
+8, block, Fuzzy contest 05, 9
+9, loop_block, idle, 1, on, 10
+10, block, Fuzzy contest 06, 11
+11, loop_block, idle, 1, on, 12
+12, block, Fuzzy contest 07, 13
+13, loop_block, idle, 1, on, 14
+14, block, Fuzzy contest 08, 15
+15, loop_block, idle, 1, on, end
+

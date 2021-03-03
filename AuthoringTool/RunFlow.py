@@ -237,6 +237,7 @@ class SessionGUI(tk.Frame):
             self.final_status_variable.set('Please, Start Recording Camera!')
         else:
             self.button_run.configure(state=DISABLED)
+        self.button_run.configure(state=NORMAL) # OG added temporary so Goren could run a script without props
 
     def worker(self):
         os.system('rosbag record -a -o data/robot_puppet_ID001.bag')

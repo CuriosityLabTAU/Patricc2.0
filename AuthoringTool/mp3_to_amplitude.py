@@ -87,11 +87,11 @@ def path_to_lip_csv(the_path):
     mp3_files = [f for f in listdir(the_path) if '.wav' in f]
 
     for m in mp3_files:
-        mp3_to_lip_csv('sounds/game_2/wav/','sounds/game_2/', m)
+        mp3_to_lip_csv('sounds/Fuzzy_contest/wav/','sounds/Fuzzy_contest/', m)
 
 
-#path_to_lip_csv('sounds/game_2/wav')
-mp3_to_lip_csv('sounds/game_1/wav/','sounds/game_1/', 'an avocado thinking.wav')
+#path_to_lip_csv('sounds/Fuzzy_contest/wav')
 
+mp3_to_lip_csv('sounds/Fuzzy_contest/wav/', 'sounds/Fuzzy_contest/', 'idle.wav')
 
 
