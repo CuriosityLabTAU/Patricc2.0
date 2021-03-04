@@ -296,7 +296,10 @@ class play_block():
                 new_command = CommandPosition()
                 new_command.id = [i for i in range(1, 9)]
                 new_command.angle = new_item[1:]
-                #print new_command.angle
+                #This is the (ugly) change to make for the robot with the flipped arm
+                new_command.angle[4] = self.map_angles([4.1,0.9], [0.9,4.1], new_command.angle[4]) # flips angles of left arm
+                new_command.angle[6] = self.map_angles([1, 4.1], [4.1, 1], new_command.angle[6]) # flips angles of right arm
+                ###
                 new_command.speed = self.motor_speed
                 self.motor_publisher.publish(new_command)
 
