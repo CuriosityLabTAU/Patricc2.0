@@ -3,7 +3,7 @@ path, game_1
 props, banana orange avocado strawberry lemon
 
 #, introduction
-start, loop_block, snoring, 5, on, a_1
+start, loop_block, snoring, 5, on, y_1
 a_1, block, yawn, a_2
 a_2, block, hi my name is fuzzy, a_3
 a_3,block, stomach sound, a_4
@@ -134,44 +134,45 @@ y_1, block, Can you help me clean up, y_2
 y_2, loop_block, idle_1, 1, on, y_3
 y_3, block, could you please put all the fruit back in the basket, y_41
 y_41, loop_block, idle_1, 3, on, y_4
-y_4, prop_event, all_in_basket, on, positive, NONE, y_end, y_a_1
+y_4, prop_event, all_in_basket, on, positive, NONE, y_end, y_5
+
+y_5, prop_event, is_banana_on_console, on, is_on_console, banana, y_6, y_c_1
+y_6, prop_event, is_only_banana_on_console, on, positive, banana, y_7, y_8
+y_7, block, very good only the banana is missing, y_8
+y_8, rfid_block, banana, in basket, put the banana in the basket, y_9
+y_9, prop_event, is_banana_on_console, on, is_not_on_console, banana, y_91, y_10
+y_91, block, great, y_4
 
 y_10, loop_block, idle_1, 5, on, y_4
 
-y_a_1, prop_event, is_banana_on_console, on, is_on_console, banana, y_a_2, y_b_1
-y_a_2, prop_event, is_only_banana_on_console, on, positive, banana, y_a_3, y_a_4
-y_a_3, block, very good only the banana is missing, y_a_4
-y_a_4, prop_event, is_banana_on_console, on, is_not_on_console, banana, y_a_6, y_a_5
-y_a_5, rfid_block, banana, in basket, put the banana in the basket, y_10
-y_a_6, block, great, y_4
+y_11, prop_event, is_orange_on_console, on, is_on_console, orange, y_12, y_16
+y_12, prop_event, is_only_orange_on_console, on, positive, orange, y_13, y_14
+y_13, block, very good only the orange is missing, y_14
+y_14, rfid_block, orange, in basket, put the orange in the basket, y_15
+y_15, prop_event, is_orange_on_console, on, is_not_on_console, orange, y_151, y_10
+y_151, block, very good, y_4
 
-y_b_1, prop_event, is_orange_on_console, on, is_on_console, orange, y_b_2, y_c_1
-y_b_2, prop_event, is_only_orange_on_console, on, positive, orange, y_b_3, y_b_4
-y_b_3, block, very good only the orange is missing, y_b_4
-y_b_4, prop_event, is_orange_on_console, on, is_not_on_console, orange, y_b_6, y_b_5
-y_b_5, rfid_block, orange, in basket, put the orange in the basket, y_10
-y_b_6, block, very good, y_4
+y_16, prop_event, is_strawberry_on_console, on, is_on_console, strawberry, y_17, y_21
+y_17, prop_event, is_only_strawberry_on_console, on, positive, strawberry, y_18, y_19
+y_18, block, very good only the strawberry is missing, y_19
+y_19, prop_event, is_strawberry_on_console, on, is_not_on_console, strawberry, y_201, y_20
+y_20, rfid_block, strawberry, in basket, put the strawberry in the basket, y_10
+y_201, block, good job, y_4
 
-y_c_1, prop_event, is_strawberry_on_console, on, is_on_console, strawberry, y_c_2, y_d_1
-y_c_2, prop_event, is_only_strawberry_on_console, on, positive, strawberry, y_c_3, y_c_4
-y_c_3, block, very good only the strawberry is missing, y_c_4
-y_c_4, prop_event, is_strawberry_on_console, on, is_not_on_console, strawberry, y_c_6, y_c_5
-y_c_5, rfid_block, strawberry, in basket, put the strawberry in the basket, y_10
-y_c_6, block, good job, y_4
 
-y_d_1, prop_event, is_lemon_on_console, on, is_on_console, lemon, y_d_2, y_e_1
-y_d_2, prop_event, is_only_lemon_on_console, on, positive, lemon, y_d_3, y_d_4
-y_d_3, block, very good only the lemon is missing, y_d_4
-y_d_4, prop_event, is_lemon_on_console, on, is_not_on_console, lemon, y_d_6, y_d_5
-y_d_5, rfid_block, lemon, in basket, put the lemon in the basket, y_10
-y_d_6, block, fantastic, y_4
+y_21, prop_event, is_lemon_on_console, on, is_on_console, lemon, y_22, y_26
+y_22, prop_event, is_only_lemon_on_console, on, positive, lemon, y_23, y_24
+y_23, block, very good only the lemon is missing, y_24
+y_24, rfid_block, lemon, in basket, put the lemon in the basket, y_25
+y_25, prop_event, is_lemon_on_console, on, is_not_on_console, lemon, y_251, y_10
+y_251, block, fantastic, y_4
 
-y_e_1, prop_event, is_avocado_on_console, on, is_on_console, avocado, y_e_2, y_4
-y_e_2, prop_event, is_only_avocado_on_console, on, positive, avocado, y_e_3, y_e_4
-y_e_3, block, very good only the avocado is missing, y_e_4
-y_e_4, prop_event, is_avocado_on_console, on, is_not_on_console, avocado, y_e_6, y_e_5
-y_e_5, rfid_block, avocado, in basket, put the avocado in the basket, y_10
-y_e_6, block, great (1), y_4
+y_26, prop_event, is_avocado_on_console, on, is_on_console, avocado, y_27, y_31
+y_27, prop_event, is_only_avocado_on_console, on, positive, avocado, y_28, y_29
+y_28, block, very good only the avocado is missing, y_29
+y_29, rfid_block, avocado, in basket, put the avocado in the basket, y_30
+y_30, prop_event, is_avocado_on_console, on, is_not_on_console, avocado, y_301, y_10
+y_301, block, great (1), y_4
 
 y_end, loop_block, idle_1, 1, on, j_1
 
