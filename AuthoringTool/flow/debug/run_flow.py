@@ -211,7 +211,8 @@ class FlowNode:
                 if self.rule_sign == 'is_change':
                     self.rule = detected_props
                 if self.rule_sign == 'prop_on_position':
-                    self.rule = [self.rule[1], self.rule[3]]
+                    self.rule = [self.rule[1], self.flow['cover'].index(self.rule[3])]
+                    print 'new rule:', self.rule
                 self.event_goto = self.flow[current_step[0]]['goto']
                 current_step = list(self.flow[current_step[0]]['next'])
                 print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
@@ -445,7 +446,6 @@ class FlowNode:
         self.wrong_in_air = []
         self.wrong_on_console = []
         detected_props = [x for x in FlowNode.block_player.rfids if x != None]
-        print 'the detected props are:', detected_props, 'the lemon is :', detected_props.index('lemon')
         if self.rule_sign=='is_on_console':
             if set(self.rule).issubset(set(detected_props))==True:
                 self.event_occured = True
@@ -468,45 +468,21 @@ class FlowNode:
                 self.event_occured = True
         elif self.rule_sign == 'is_change':
             if set(detected_props)==set(self.rule):
-                self.even_occured = True
+                self.event_occured = True
             else:
-                self.even_occured = False
-
-
-#        if self.rule_sign=='is_on_console':
-#            if set(self.rule).issubset(set(detected_props))==True:
-#                self.event_occured = True
-#            else:
-#                self.event_occured = False
-#        if self.rule_sign=='is_not_on_console':
-#            if set(self.rule).issubset(set(detected_props))==True:
-#                self.event_occured = False
-#            else:
-#                self.event_occured = True
-#        if set(detected_props)==set(self.rule):
-#            if self.rule_sign == 'positive':
-#                self.event_occured = True
-#            elif self.rule_sign == 'negative':
-#                self.event_occured = False
-#            elif self.rule_sign == 'is_change':
-#                self,even_occured = True
-#        else:
-#            if self.rule_sign == 'negative':
-#                self.event_occured = True
-#            elif self.rule_sign == 'positive':
-#                self.event_occured = False
-#            elif self.rule_sign == 'is_change':
-#                self,even_occured = False
+                self.event_occured = False
+        elif self.rule_sign == 'prop_on_position':
+            try:
+                FlowNode.block_player.rfids.index(self.rule[0])
+                prop_pos = FlowNode.block_player.rfids.index(self.rule[0])
+            except ValueError:
+                prop_pos = 5
+            print 'debug new rule ', prop_pos, ' : ', self.rule[1]
+            if prop_pos == self.rule[1]:
+                self.event_occured = True
+            else:
+                self.event_occured = False
         print 'event: ', self.event_name, ' detected: ', detected_props, ' rule: ', self.rule, 'event occured: ', self.event_occured
-        print 'what is ', np.setdiff1d(self.flow['props'],self.rule)
-
-#        if self.rule_sign == 'positive':
-#            self.wrong_in_air = np.setdiff1d(self.rule,detected_props)
-#            self.wrong_on_console = np.setdiff1d(detected_props, self.rule)
-#        elif self.rule_sign == 'negative':
-#            self.wrong_in_air = np.setdiff1d(np.setdiff1d(self.flow['props'],self.rule), detected_props)
-#            self.wrong_on_console = np.setdiff1d(self.rule, detected_props)
-
 
         self.wrong_in_air = np.setdiff1d(self.rule,detected_props)
         self.wrong_on_console = np.setdiff1d(detected_props, self.rule)
