@@ -1,0 +1,6 @@
+robot, fuzzy
+path, Fuzzy_contest
+props, orange
+start, block, Fuzzy contest 10, 1
+1, loop_block, idle, 1, on, 2
+2, block, Fuzzy contest 11, end
