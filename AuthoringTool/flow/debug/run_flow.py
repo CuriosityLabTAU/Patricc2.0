@@ -52,6 +52,8 @@ class FlowNode:
                     self.flow['path'] = step_desc[1].lstrip() + '/'
                 elif step_desc[0].lstrip() == 'props':
                     self.flow['props'] = step_desc[1].lstrip().split(' ')
+                elif step_desc[0].lstrip() == 'cover':
+                    self.flow['cover'] = step_desc[1].lstrip().split(' ')
                 elif step_desc[1].lstrip() == 'block':
                     self.flow[step_desc[0]] = {
                         'type': 'block',
@@ -207,8 +209,9 @@ class FlowNode:
                     detected_props = [x for x in FlowNode.block_player.rfids if x != None]
                     self.rule = detected_props
                 if self.rule_sign == 'is_change':
-
                     self.rule = detected_props
+                if self.rule_sign == 'prop_on_position':
+                    self.rule = [self.rule[1], self.rule[3]]
                 self.event_goto = self.flow[current_step[0]]['goto']
                 current_step = list(self.flow[current_step[0]]['next'])
                 print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
@@ -442,7 +445,7 @@ class FlowNode:
         self.wrong_in_air = []
         self.wrong_on_console = []
         detected_props = [x for x in FlowNode.block_player.rfids if x != None]
-
+        print 'the detected props are:', detected_props, 'the lemon is :', detected_props.index('lemon')
         if self.rule_sign=='is_on_console':
             if set(self.rule).issubset(set(detected_props))==True:
                 self.event_occured = True

@@ -1,11 +1,13 @@
 robot, fuzzy
 path, game_1
-props, banana orange avocado strawberry lemon
+props, cow donkey sheep
+cover, orange strawberry water lemon banana
 
 #, introduction
-start, loop_block, snoring, 5, on, a_1
+start, loop_block, snoring, 5, on, aa
+aa, prop_event, is_cow_drinking, on, prop_on_position, is cow on lemon, a_1, a_2
 a_1, block, yawn, a_2
-a_2, block, hi my name is fuzzy, a_3
+a_2, block, hi my name is fuzzy, a_2
 a_3,block, stomach sound, a_4
 a_4, block, did you hear that that was my tummy, a_5
 a_5, block, Im so hungry, b_1
