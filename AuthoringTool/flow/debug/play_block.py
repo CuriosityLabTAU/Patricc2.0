@@ -267,7 +267,7 @@ class play_block():
             print('done playing!')
         np_real_output = np.array(real_output)
 
-    def play_motor_commands(self, motor_commands, stop_on_sound=False, play_sound='on', duration=500, activation="off", rule=[], rule_sign=[]):
+    def play_motor_commands(self, motor_commands, stop_on_sound=False, play_sound='on', duration=500, activation="off", rule=[], rule_sign=[], lip='on', stop_at='block'):
         first_item = motor_commands[0, :]
         old_item = motor_commands[0, :]
         is_playing = False
@@ -292,7 +292,6 @@ class play_block():
             if dt > 0.001:
                 time.sleep(dt)
                 old_item = new_item
-
                 new_command = CommandPosition()
                 new_command.id = [i for i in range(1, 9)]
                 new_command.angle = new_item[1:]
@@ -300,6 +299,8 @@ class play_block():
                 #new_command.angle[4] = self.map_angles([4.1,0.9], [0.9,4.1], new_command.angle[4]) # flips angles of left arm
                 #new_command.angle[6] = self.map_angles([1, 4.1], [4.1, 1], new_command.angle[6]) # flips angles of right arm
                 ###
+                if lip=='off':
+                    new_command.angle[3] = 1.8
                 new_command.speed = self.motor_speed
                 self.motor_publisher.publish(new_command)
 
@@ -309,6 +310,9 @@ class play_block():
                         if play_sound=='on':
                             pygame.mixer.music.play()
                         print('playing')
+                if stop_at=='sound':
+                    if pygame.mixer.music.get_busy()==False:
+                        break
         if is_playing:
             while pygame.mixer.music.get_busy():
                 time.sleep(0.020)
@@ -344,11 +348,11 @@ class play_block():
 
         return filtered_motor_commands
 
-    def play_editted(self, motor_commands=None, stop_on_sound=False, play_sound='on', duration=500, activation='off', rule=[], rule_sign=[]):
+    def play_editted(self, motor_commands=None, stop_on_sound=False, play_sound='on', duration=500, activation='off', rule=[], rule_sign=[], lip='on', stop_at='block'):
         if motor_commands is None:
             motor_commands = self.convert_to_motor_commands()
         filtered_motor_commands = self.edit(motor_commands)
-        self.play_motor_commands(motor_commands=filtered_motor_commands, stop_on_sound=stop_on_sound, play_sound=play_sound, duration=duration, activation=activation, rule=rule, rule_sign=rule_sign)
+        self.play_motor_commands(motor_commands=filtered_motor_commands, stop_on_sound=stop_on_sound, play_sound=play_sound, duration=duration, activation=activation, rule=rule, rule_sign=rule_sign, lip=lip, stop_at=stop_at)
 
     def load_files(self):
         self.lip_angle = []
@@ -472,7 +476,7 @@ class play_block():
     def check_prop_event(self, rule, rule_sign):
         detected_props = [x for x in self.rfids if x != None]
         prop_event_occured = False
-
+        print 'the rule is:', rule
         if rule_sign=='is_on_console':
             if set(rule).issubset(set(detected_props))==True:
                 prop_event_occured = True
@@ -500,8 +504,8 @@ class play_block():
                 prop_event_occured = False
         elif rule_sign == 'prop_on_position':
             try:
-                self.rfids.index(self.rule[0])
-                prop_pos = self.rfids.index(self.rule[0])
+                self.rfids.index(rule[0])
+                prop_pos = self.rfids.index(rule[0])
             except ValueError:
                 prop_pos = 5
             print 'debug new rule ', prop_pos, ' : ', rule[1]

@@ -4,15 +4,66 @@ props, cow donkey sheep
 cover, banana lemon water strawberry orange
 
 #, introduction
-start, loop_block, snoring, 5, on, aa
-aa, prop_event, is_cow_drinking, on, prop_on_position, is cow on strawberry, a_1, a_2
+start, loop_block, snoring, 5, on, b_1
 a_1, block, yawn, a_2
-a_2, block, hi my name is fuzzy, a_2
-a_3,block, stomach sound, a_4
-a_4, block, did you hear that that was my tummy, a_5
-a_5, block, Im so hungry, end
+a_2, block, hey youre back, a_3
+a_3, block, im so happy, a_4
+a_4, block, Can you help me feed the animals, a_5
+a_5, loop_block, idle_1, 2, on, a_6
+a_6, great, b_1
 
-#, get cow from barn
-b_1, wha
+#, get the cow from the barn
+b_1, mixed_block, idle_1, cow angry 1, NONE, off, sound,b_1_1
+b_1_1, mixed_block, listening, the cow is hungry, NONE, on, sound, b_2
+b_2, block, can you get the cow from the barn, b_3
+b_3, prop_event, is_anything_on_console, on, negative, NONE, b_6, b_4
+b_4, mixed_block, point_b_3, put the cow here, NONE, on, motion, b_5
+b_5, loop_block, idle_1, 10, on, b_1
+b_6, prop_event, is_cow_on_console, on, is_on_console, cow, b_9, b_7
+b_7, rfid_block, WRONG_ON_CONSOLE, hint_b, that isnt a cow, b_8
+b_8, mixed_block, idle_1, that is a {}, WRONG_ON_CONSOLE, on, sound, b_1
+b_9, prop_event, is_the_cow_drinking, on, prop_on_position, is cow on water, b_11, b_10
+b_10, block, great, c_1
+b_11, block, great, b_12
+b_12, mixed_block, idle_1, drinking cow 1, NONE, off, sound, c_1
+
+#, the cow wants to eat a banana
+c_1, mixed_block, idle_1, the cow wants to eat a banana, NONE, on, sound, c_2
+c_2, block, can you please bring the cow to the banana, c_3
+c_3, loop_block, idle_1, 3, on, c_4
+c_4, prop_event, is_cow_on_console, on, is_on_console, cow, c_6, c_5
+c_5, mixed_block, idle_1, mooo3, NONE, off, sound, c_2
+c_6, prop_event, is_cow_on_banana, on, prop_on_position, is cow on banana, c_8, c_7
+c_7, prop_event, is_cow_on_orange, on, prop_on_position, is cow on orange, c_10, c_9
+c_13, mixed_block, idle_1, cow eating, NONE, off, sound, c_14
+c_9, prop_event, is_cow_on_strawberry, on, prop_on_position, is cow on strawberry, c_12, c_11
+c_10, mixed_block, idle_1, cow angry 1, NONE, off, sound, c_11
+c_11, loop_block, idle_1, 2, on, c_4
+c_12, mixed_block, idle_1, disguesed cow 1, NONE, off, sound, c_11
+c_8, block, great, c_13
+c_14, mixed_block, idle_1, the cow is eating a banana, NONE, on, sound, c_15
+c_15, mixed_block, idle_1, happy cow 1, NONE, on, sound, d_1
+
+#, the cow wants to eat a lemon
+d_1, mixed_block, idle_1, the cow wants to eat a lemon, NONE, on, sound, d_2
+d_2, block, can you please bring the cow to the lemon, d_3
+d_3, loop_block, idle_1, 3, on, d_4
+d_4, prop_event, is_cow_on_console, on, is_on_console, cow, d_6, d_5
+d_5, mixed_block, idle_1, mooo3, NONE, off, sound, d_2
+d_6, prop_event, is_cow_on_lemon, on, prop_on_position, is cow on lemon, d_8, d_7
+d_7, prop_event, is_cow_on_orange, on, prop_on_position, is cow on orange, d_10, d_9
+d_13, mixed_block, idle_1, cow eating, NONE, off, sound, d_14
+d_9, prop_event, is_cow_on_strawberry, on, prop_on_position, is cow on strawberry, d_12, d_11
+d_10, mixed_block, idle_1, cow angry 1, NONE, off, sound, d_11
+d_11, loop_block, idle_1, 2, on, d_4
+d_12, mixed_block, idle_1, disguesed cow 1, NONE, off, sound, d_16
+d_16, mixed_block, point_b_2, this isnt a lemon, NONE, on, sound, d_17
+d_17, mixed_block, idle_1, This is a strawberry, NONE, on , sound, d_11
+d_8, block, great, d_13
+d_14, mixed_block, idle_1, the cow is eating a lemon, NONE, on, sound, d_15
+d_15, mixed_block, idle_1, happy cow 1, NONE, on, sound, end
+
+
+
 
 

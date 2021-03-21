@@ -6,7 +6,7 @@ props, banana orange avocado strawberry lemon
 start, loop_block, snoring, 5, on, a_1
 a_1, block, yawn, a_2
 a_2, block, hi my name is fuzzy, a_3
-a_3,block, stomach sound, a_4
+a_3, block, stomach sound, a_4
 a_4, block, did you hear that that was my tummy, a_5
 a_5, block, Im so hungry, b_1
 
@@ -15,7 +15,7 @@ b_1, block, can you get the fruit from the basket, b_2
 b_2, Put them one by one on the plates, b_3
 b_3, prop_event, check_all_on_console, on, positive, banana orange avocado strawberry lemon, b_8, b_5
 b_5, prop_event, detect_change, on, negative, CURRENT,b_6, b_7
-b_6, mixed_block, waiting, a {}, WRONG_ON_CONSOLE, b_3
+b_6, mixed_block, waiting, a {}, WRONG_ON_CONSOLE, on, b_3
 b_7, loop_block, idle_1, 5, on, b_5
 b_8, block, great, b_end
 b_end, block, Well done Everything is ready Lets begin, c_1
@@ -182,7 +182,7 @@ j_4, block, ending yawn, j_5
 j_5, block, snoring, end
 
 #, routine- put down all props
-z_2, mixed_block, put_down_1_a, put the {} down, WRONG_IN_AIR, z_3
+z_2, mixed_block, put_down_1_a, put the {} down, WRONG_IN_AIR, on, z_3
 z_3, prop_event, everything_is_down, on, positive, banana orange avocado strawberry lemon, z_5, z_4
 z_4, loop_block, idle_2, 10, on ,z_2
 z_5, block, great, z_6

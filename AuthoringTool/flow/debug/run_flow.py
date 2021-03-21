@@ -97,7 +97,9 @@ class FlowNode:
                         'block': step_desc[2].lstrip(),
                         'sound': step_desc[3].lstrip(),
                         'prop': step_desc[4].lstrip(),
-                        'next': step_desc[5].lstrip().split(' ')
+                        'lip': step_desc[5].lstrip(),
+                        'stop': step_desc[6].lstrip(),
+                        'next': step_desc[7].lstrip().split(' ')
                     }
                 elif step_desc[1].lstrip() == 'gaze_towards':
                     self.flow[step_desc[0]] = {
@@ -224,7 +226,7 @@ class FlowNode:
             elif self.flow[current_step[0]]['type'] == 'mixed_block':
                 block_name = self.get_block_name(current_step)
                 FlowNode.block_player.sound_filename = None
-
+                sound_temp = self.flow[current_step[0]]['sound']
                 if self.flow[current_step[0]]['prop'] == 'WRONG_IN_AIR':
                     if len(self.wrong_in_air)>0:
                         temp_prop = self.wrong_in_air[0]
@@ -248,9 +250,10 @@ class FlowNode:
                 #print "testing ", block_name, sound_temp, FlowNode.block_player.sound_filename,FlowNode.block_player.lip_filename
                 self.next_block = self.get_block_name(self.flow[current_step[0]]['next'])
                 stop_on_sound = False
-                self.play_complex_block(block_name, stop_on_sound=stop_on_sound)
+                self.play_complex_block(block_name, stop_on_sound=stop_on_sound, lip=self.flow[current_step[0]]['lip'], stop_at=self.flow[current_step[0]]['stop'])
                 #print "mixed block current step:", current_step
                 current_step = self.flow[current_step[0]]['next']
+
             elif self.flow[current_step[0]]['type'] == 'rfid_block':
                 block_name = self.get_block_name(current_step)
                 FlowNode.block_player.sound_filename = None
@@ -323,7 +326,10 @@ class FlowNode:
             elif self.flow[current_step[0]]['type'] == 'point':
                 block_name = self.get_point_block(self.flow[current_step[0]]['rfid'])
             elif self.flow[current_step[0]]['type'] == 'rfid_block':
-                block_name = self.get_rfid_block(self.flow[current_step[0]]['prop'],self.flow[current_step[0]]['block'])
+                if self.flow[current_step[0]]['prop']=='WRONG_ON_CONSOLE':
+                    block_name = self.get_rfid_block(self.wrong_on_console,self.flow[current_step[0]]['block'])
+                else:
+                    block_name = self.get_rfid_block(self.flow[current_step[0]]['prop'],self.flow[current_step[0]]['block'])
             elif self.flow[current_step[0]]['type'] == 'mixed':
                 block_name = self.base_path + 'blocks/' + self.flow['path'] + self.flow[current_step[0]]['block']
             elif self.flow[current_step[0]]['type'] == 'prop_block':
@@ -359,13 +365,13 @@ class FlowNode:
         print block_name
         return block_name
 
-    def play_complex_block(self, block_name, stop_on_sound=False, motor_commands=None, play_sound='on', duration=500, activation='off', rule=[], rule_sign=[]):
+    def play_complex_block(self, block_name, stop_on_sound=False, motor_commands=None, play_sound='on', duration=500, activation='off', rule=[], rule_sign=[], lip='on', stop_at='block'):
         print block_name, duration
         FlowNode.block_player.load_block(block_name)
         new_motor_commands = FlowNode.block_player.stitch_blocks(block_before=self.prev_block,
                                                         block_after=self.next_block,
                                                         motor_commands=motor_commands)
-        FlowNode.block_player.play_editted(motor_commands=new_motor_commands, stop_on_sound=stop_on_sound, play_sound=play_sound, duration=duration, activation=activation, rule=rule, rule_sign=rule_sign)
+        FlowNode.block_player.play_editted(motor_commands=new_motor_commands, stop_on_sound=stop_on_sound, play_sound=play_sound, duration=duration, activation=activation, rule=rule, rule_sign=rule_sign, lip=lip, stop_at=stop_at)
         self.prev_block = block_name
 
     def convert_mixed(self, the_block=None):
@@ -473,7 +479,7 @@ class FlowNode:
                 self.event_occured = False
         elif self.rule_sign == 'prop_on_position':
             try:
-                FlowNode.block_player.rfids.index(self.rule[0])
+                #FlowNode.block_player.rfids.index(self.rule[0])
                 prop_pos = FlowNode.block_player.rfids.index(self.rule[0])
             except ValueError:
                 prop_pos = 5
