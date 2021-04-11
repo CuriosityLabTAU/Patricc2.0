@@ -46,6 +46,19 @@ class BackgroundAudio():
                        'donkey':{'yummy':[], 'yuck':[], 'drink':[], 'yawn':[], 'bored':[], 'regular':[]},
                        'sheep':{'yummy':[], 'yuck':[], 'drink':[], 'yawn':[], 'bored':[], 'regular':[]}}
         self.wake_up_time = [15, 45]
+        self.max_sleep = 60
+        self.last_action = 'start'
+        self.sleep_log = {'cow': {'sleep':'false', 'time':datetime.now()},
+                          'donkey': {'sleep':'false', 'time':datetime.now()},
+                          'sheep': {'sleep':'false', 'time':datetime.now()},}
+        mixer.init()
+        rospy.init_node('world')
+        rospy.Subscriber('/rfid', String, self.callback_rfid)
+        rospy.Subscriber('/game_2_activation', String, self.callback_activation)
+        self.world_publisher = rospy.Publisher('/world_action', String, queue_size=10)
+
+        rospy.spin()
+
 
 
     def start(self):
@@ -53,6 +66,7 @@ class BackgroundAudio():
         rospy.init_node('world')
         rospy.Subscriber('/rfid', String, self.callback_rfid)
         rospy.Subscriber('/game_2_activation', String, self.callback_activation)
+        #self.mode_publisher = rospy.Publisher('/patricc_activation_mode', String, queue_size=10)
         rospy.spin()
 
     def callback_rfid(self, data):
@@ -128,6 +142,7 @@ class BackgroundAudio():
 
     def controller(self):
         print 'here'
+        self.world_publisher.publish('hello hello')
         if self.activation=='on':
             if mixer.music.get_busy()==False:
                 print 'here', self.rfids, self.is_rfid_change
@@ -136,29 +151,44 @@ class BackgroundAudio():
                     print (current_time-self.last_action_time).total_seconds()
                     self.play_sound(random.choice(self.animals), 'regular')
                     self.last_action_time = datetime.now()
+                    self.last_action = 'regular'
                 elif (current_time-self.last_action_time).total_seconds() > self.wake_up_time[1]:
                     self.play_sound(random.choice(self.animals), 'bored')
                     self.last_action_time = datetime.now()
+                    self.last_action = 'bored'
                 elif self.is_rfid_change==True:
                     animal = self.rfid_change[0]
                     food = self.rfid_change[1]
-                    if food!=None:
-                        if food in self.food_preferences[animal]['like']: # if this is something the animal likes
-                            self.eat_log[animal]['eat'] += 1
-                            self.eat_log[animal]['action'] += 1
-                            self.play_sound(animal, 'yummy')
-                        elif food in self.food_preferences[animal]['dislike']:
-                            self.eat_log[animal]['action'] += 1
-                            self.play_sound(animal, 'yuck')
-                        elif food == 'water':
-                            self.eat_log[animal]['action'] += 1
-                            self.play_sound(animal, 'drink')
-                        if self.eat_log[animal]['action']>self.max_activity or self.eat_log[animal]['eat']>self.max_eat:
-                            while mixer.music.get_busy():
-                                time.sleep(0.1)
-                            self.play_sound(animal, 'yawn')
-                        self.is_rfid_change = False
-                        self.last_action_time = datetime.now()
+                    sleep_time = self.sleep_log[animal]['time']
+                    if self.sleep_log[animal]['sleep'] == 'true' and (current_time-sleep_time).total_seconds()>self.max_sleep:
+                        self.sleep_log[animal] = 'false'
+                    if self.sleep_log[animal]['sleep'] == 'false':
+                        if food!=None:
+                            if food in self.food_preferences[animal]['like']: # if this is something the animal likes
+                                self.eat_log[animal]['eat'] += 1
+                                self.eat_log[animal]['action'] += 1
+                                self.play_sound(animal, 'yummy')
+                                self.last_action = 'yummy'
+                            elif food in self.food_preferences[animal]['dislike']:
+                                self.eat_log[animal]['action'] += 1
+                                self.play_sound(animal, 'yuck')
+                                self.last_action = 'yuck'
+                            elif food == 'water':
+                                self.eat_log[animal]['action'] += 1
+                                self.play_sound(animal, 'drink')
+                                self.last_action = 'drink'
+                            if self.eat_log[animal]['action']>self.max_activity or self.eat_log[animal]['eat']>self.max_eat:
+                                while mixer.music.get_busy():
+                                    time.sleep(0.1)
+                                self.play_sound(animal, 'yawn')
+                                self.last_action = 'yawn'
+                                self.eat_log[animal]['action'] = 0
+                                self.eat_log[animal]['eat'] = 0
+                                self.sleep_log[animal]['sleep'] = 'true'
+                                self.sleep_log[animal]['time'] = datetime.now()
+                            self.is_rfid_change = False
+                            self.last_action_time = datetime.now()
+            self.world_publisher.publish(self.last_action)
             time.sleep(0.1)
 
 
@@ -177,5 +207,5 @@ class BackgroundAudio():
 
 
 ba = BackgroundAudio()
-ba.start()
+#ba.start()
 
