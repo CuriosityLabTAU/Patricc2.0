@@ -54,7 +54,7 @@ class BackgroundAudio():
         mixer.init()
         rospy.init_node('world')
         rospy.Subscriber('/rfid', String, self.callback_rfid)
-        rospy.Subscriber('/game_2_activation', String, self.callback_activation)
+        rospy.Subscriber('/game_activation', String, self.callback_activation)
         self.world_publisher = rospy.Publisher('/world_action', String, queue_size=10)
 
         rospy.spin()
@@ -65,7 +65,7 @@ class BackgroundAudio():
         mixer.init()
         rospy.init_node('world')
         rospy.Subscriber('/rfid', String, self.callback_rfid)
-        rospy.Subscriber('/game_2_activation', String, self.callback_activation)
+        rospy.Subscriber('/game_activator', String, self.callback_activation)
         #self.mode_publisher = rospy.Publisher('/patricc_activation_mode', String, queue_size=10)
         rospy.spin()
 
@@ -104,17 +104,22 @@ class BackgroundAudio():
     def callback_activation(self, data):
         msg = data.data
         if self.activation == 'off':
-            if msg == 'on':
+            if msg == 'game_2':
                 self.reset()
-        self.activation = msg
+                self.activation = 'on'
+        elif self.activation == 'on':
+            if msg != 'game_2':
+                self.activation = 'off'
 
     def reset(self):
         self.rfids = [None for i in range(5)]
+        self.activation = 'on'
         self.animal_states  = {'cow':'sleeping', 'donkey':'sleeping', 'sheep':'sleeping'}
         self.cover = ['orange', 'strawberry', 'water', 'lemon', 'banana']
+        self.animals = ['cow', 'donkey', 'sheep']
         self.is_rfid_change = False
         self.rfid_change = []
-        self.rfid_prev = []
+        self.rfid_prev = [None for i in range(5)]
         self.food_preferences = {'cow':{'like':['lemon', 'banana'],
                                         'dislike':['orange', 'strawberry'],
                                         'state':'sleep',
@@ -131,6 +136,17 @@ class BackgroundAudio():
                         'donkey':{'eat':0, 'action':0},
                         'sheep':{'eat':0, 'action':0}}
         self.max_activity = 6
+        self.max_eat = 3
+        self.last_action_time = datetime.now()
+        self.sounds = {'cow':{'yummy':[], 'yuck':[], 'drink':[], 'yawn':[], 'bored':[], 'regular':[]},
+                       'donkey':{'yummy':[], 'yuck':[], 'drink':[], 'yawn':[], 'bored':[], 'regular':[]},
+                       'sheep':{'yummy':[], 'yuck':[], 'drink':[], 'yawn':[], 'bored':[], 'regular':[]}}
+        self.wake_up_time = [15, 45]
+        self.max_sleep = 60
+        self.last_action = 'start'
+        self.sleep_log = {'cow': {'sleep':'false', 'time':datetime.now()},
+                          'donkey': {'sleep':'false', 'time':datetime.now()},
+                          'sheep': {'sleep':'false', 'time':datetime.now()},}
 
     def play_sound(self, animal, action):
         #sound_file = random.choice(self.sounds[animal][action])
@@ -190,20 +206,6 @@ class BackgroundAudio():
                             self.last_action_time = datetime.now()
             self.world_publisher.publish(self.last_action)
             time.sleep(0.1)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ba = BackgroundAudio()

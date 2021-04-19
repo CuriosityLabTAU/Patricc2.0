@@ -140,6 +140,14 @@ class FlowNode:
                         'sound': step_desc[4].lstrip(),
                         'next': step_desc[5].lstrip()
                     }
+
+                elif step_desc[1].lstrip() == 'ros_publish':
+                    self.flow[step_desc[0]] = {
+                        'type': step_desc[1].lstrip(),
+                        'publish': step_desc[2].lstrip(),
+                        'next': step_desc[3].lstrip()
+                    }
+
                 elif step_desc[0].lstrip() == '#':
                     pass
                 else:
@@ -215,6 +223,7 @@ class FlowNode:
                 if self.rule_sign == 'prop_on_position':
                     self.rule = [self.rule[1], self.flow['cover'].index(self.rule[3])]
                     print 'new rule:', self.rule
+
                 self.event_goto = self.flow[current_step[0]]['goto']
                 current_step = list(self.flow[current_step[0]]['next'])
                 print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
@@ -483,9 +492,15 @@ class FlowNode:
                 prop_pos = FlowNode.block_player.rfids.index(self.rule[0])
             except ValueError:
                 prop_pos = 5
-            print 'debug new rule ', prop_pos, ' : ', self.rule[1]
             if prop_pos == self.rule[1]:
                 self.event_occured = True
+            else:
+                self.event_occured = False
+        elif self.rule_sign == 'ROS':
+            print 'debug new rule ', FlowNode.block_player.world_event, ' : ', self.rule[0]
+            if FlowNode.block_player.world_event == self.rule[0]:
+                self.event_occured = True
+                FlowNode.block_player.world_event = 'none'
             else:
                 self.event_occured = False
         print 'event: ', self.event_name, ' detected: ', detected_props, ' rule: ', self.rule, 'event occured: ', self.event_occured

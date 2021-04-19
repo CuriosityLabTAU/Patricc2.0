@@ -54,7 +54,7 @@ start, block, yawn, 7
 107, block, mmm I love lemon, 108
 108, prop_event, put_down_all_props, on, negative, lemon banana orange avocado strawberry, 201, 10
 
-201, mixed_block, put_down_1_a, put the {} down, WRONG_IN_AIR, 202
+201, mixed_block, put_down_1_a, put the {} down, WRONG_IN_AIR, on, sound, 202
 202, prop_event, everything_is_down, on, positive, banana orange avocado strawberry lemon, 204, 203
 203, loop_block, idle_2, 10, on ,201
 204, block, great, 205

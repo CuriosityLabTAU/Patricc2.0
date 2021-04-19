@@ -34,10 +34,12 @@ class play_block():
 
         #self.publisher = rospy.Publisher('/dxl/command_position', CommandPosition, queue_size=10)
         self.motor_publisher = rospy.Publisher('/patricc_motion_control', CommandPosition, queue_size=10)
+        self.game_activator = rospy.Publisher('/game_activation', String, queue_size=10)
         self.mode_publisher = rospy.Publisher('/patricc_activation_mode', String, queue_size=10)
 
 
-        self.rifd_sub = rospy.Subscriber('/rfid', String, self.callback)
+        self.rifd_sub = rospy.Subscriber('/rfid', String, self.rfid_callback)
+        self.world_sub = rospy.Subscriber('/world_action', String, self.world_callback)
 
         pygame.init()
         pygame.mixer.init()
@@ -51,6 +53,8 @@ class play_block():
         self.duration = 0.0
 
         self.lip_angle = []
+        self.world_action = 'none'
+        self.world_event = 'none'
 
         self.motor_list = {'skeleton': [0, 1, 4, 5, 6, 7], 'head_pose': [2], 'lip': [3], 'full': [0, 1, 2, 3, 4, 5, 6, 7], 'full_idx': [1, 2, 3, 4, 5, 6, 7, 8]}
         self.robot_angle_range = robot_parameters.robot_angle_range
@@ -61,6 +65,7 @@ class play_block():
         self.motor_speed = robot_parameters.motor_speed
 
         rospy.init_node('block_player')
+        self.game_activator.publish('game_2')
         time.sleep(1)
         print 'open node'
 
@@ -77,7 +82,14 @@ class play_block():
             self.motor_publisher.publish(new_command)
             time.sleep(dt)
 
-    def callback(self, data):
+    def world_callback(self, data):
+        msg = data.data
+        if msg != self.world_action:
+            self.world_action = msg
+            self.world_event = self.world_action
+
+
+    def rfid_callback(self, data):
         msg = data.data
         for i in range(5):
             rfid = msg[i*8:(i+1)*8]
@@ -280,7 +292,7 @@ class play_block():
             if activation=="on":
                 if self.check_prop_event(rule, rule_sign):
                     a = self.check_prop_event(rule, rule_sign)
-                    print 'rule is ', a
+                    #print 'rule is ', a
                     pygame.mixer.music.stop()
                     break
             new_item = motor_commands[iter, :]
@@ -476,7 +488,7 @@ class play_block():
     def check_prop_event(self, rule, rule_sign):
         detected_props = [x for x in self.rfids if x != None]
         prop_event_occured = False
-        print 'the rule is:', rule
+        #print 'the rule is:', rule
         if rule_sign=='is_on_console':
             if set(rule).issubset(set(detected_props))==True:
                 prop_event_occured = True
@@ -508,13 +520,20 @@ class play_block():
                 prop_pos = self.rfids.index(rule[0])
             except ValueError:
                 prop_pos = 5
-            print 'debug new rule ', prop_pos, ' : ', rule[1]
+            #print 'debug new rule ', prop_pos, ' : ', rule[1]
             if prop_pos == rule[1]:
                 prop_event_occured = True
             else:
                 prop_event_occured = False
-
-        print 'prop event check in play block = ', prop_event_occured
+        elif rule_sign == 'ROS':
+            print 'debug new rule ', self.world_event, ' : ', rule[0]
+            if self.world_event == rule[0]:
+                prop_event_occured = True
+                print 'event:' , prop_event_occured
+                #self.world_event = 'none'
+            else:
+                prop_event_occured = False
+        #print 'prop event check in play block = ', prop_event_occured
         return prop_event_occured
 
 

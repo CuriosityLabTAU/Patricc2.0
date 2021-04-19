@@ -4,7 +4,10 @@ props, cow donkey sheep
 cover, banana lemon water strawberry orange
 
 #, introduction
-start, loop_block, snoring, 5, on, a_1
+start, loop_block, yawn, 2, on, a_100
+a_100, prop_event, is_something_on_console, on, negative, NONE, a_102, a_101
+a_102, rfid_block, WRONG_ON_CONSOLE, hint_b, aooo, a_100
+a_101, loop_block, idle_1, 10, on, a_100
 a_1, block, yawn, a_2
 a_2, block, hey youre back, a_3
 a_3, block, im so happy, a_4
@@ -171,7 +174,7 @@ l_13, loop_block, idle_1, 5, on, l_3
 l_14, mixed_block, point_b_2, this isnt a strawberry, NONE, off, sound, l_15
 l_15, mixed_block, idle_1, This is a banana, NONE, on , sound, l_13
 
-#, return the donkey to the barn
+#, return the sheeo to the barn
 l_1, mixed_block, idle_1, thats enough, NONE, on , sound, l_2
 l_2, mixed_block, idle_1, can you put the donkey back in the barn, NONE, on , sound, l_3
 l_3, loop_block, idle_1, 4, on, l_4
