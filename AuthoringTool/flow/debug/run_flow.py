@@ -174,18 +174,20 @@ class FlowNode:
         current_prop = []
         self.exit_step = {}
         while current_step[0] != 'end':
+            print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
             if current_step[0] == 'exit_step':
                 current_step[0] = self.exit_step[current_step[1]]
             if self.activation=='on':
                 self.check_event()
-                if self.event_occured == True:
+                if self.event_occured == True or FlowNode.block_player.ros_event_occured == True:
                     self.exit_step[self.event_name] = current_step[0]
                     current_step[0] = self.event_goto
                     self.activation = "off"
-            print "current step : ", current_step[0], 'new', self.flow[current_step[0]]['type']
+                    FlowNode.block_player.event_activation = self.activation
+            #print "current step : ", current_step[0], 'new', self.flow[current_step[0]]['type']
             if self.flow[current_step[0]]['type'] == 'loop_block':
                 block_name = self.get_block_name(current_step)
-                print 'loop block name: ', block_name
+                #print 'loop block name: ', block_name
                 FlowNode.block_player.sound_filename = None
                 FlowNode.block_player.lip_filename = None
 
@@ -193,7 +195,7 @@ class FlowNode:
                 resolution = 'timeout'
                 interupt_sequence = False
                 while (datetime.now() - stopwatch_start).total_seconds() < float(self.flow[current_step[0]]['duration']):
-                    print self.activation
+                    #print self.activation
                     # ===============
                     #self.play_complex_block(block_name, self.flow[current_step[0]]['play_sound'])
                     self.play_complex_block(block_name, duration=float(self.flow[current_step[0]]['duration']), activation=self.activation, rule=self.rule, rule_sign=self.rule_sign)
@@ -205,14 +207,17 @@ class FlowNode:
 
             elif self.flow[current_step[0]]['type'] == 'prop_event':
                 self.activation = self.flow[current_step[0]]['activation']
+                FlowNode.block_player.event_activation = self.activation
                 self.event_name = self.flow[current_step[0]]['event_name']
                 self.rule_sign = self.flow[current_step[0]]['rule_sign']
+                FlowNode.block_player.event_activation = self.rule_sign
                 self.rule = self.flow[current_step[0]]['rule']
+                FlowNode.block_player.event_activation = self.rule
                 if self.rule[0] == 'WRONG_IN_AIR':
                     self.rule = self.wrong_in_air[0]
                 elif self.rule[0] == 'WRONG_ON_CONSOLE':
                     self.rule = self.wrong_on_console
-                    print "rule = ", self.rule
+                    #print "rule = ", self.rule
                 elif self.rule[0] == 'NONE':
                     self.rule = []
                 elif self.rule[0] == 'CURRENT':
@@ -222,14 +227,14 @@ class FlowNode:
                     self.rule = detected_props
                 if self.rule_sign == 'prop_on_position':
                     self.rule = [self.rule[1], self.flow['cover'].index(self.rule[3])]
-                    print 'new rule:', self.rule
+                    #print 'new rule:', self.rule
 
                 self.event_goto = self.flow[current_step[0]]['goto']
                 current_step = list(self.flow[current_step[0]]['next'])
-                print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
+                #print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
 
             elif self.flow[current_step[0]]['type'] == 'gaze_towards':
-                print 'here', self.flow[current_step[0]]['who']
+                #print 'here', self.flow[current_step[0]]['who']
                 FlowNode.block_player.mode_publisher.publish(self.flow[current_step[0]]['who'])
                 current_step = self.flow[current_step[0]]['next']
             elif self.flow[current_step[0]]['type'] == 'mixed_block':
@@ -371,11 +376,11 @@ class FlowNode:
             print('ERROR: rfid %s not in list! Chaning to 1' % rfid)
             rfid_pos = 1
         block_name = self.base_path + 'blocks/' + self.flow['path'] + block +'_%d' % rfid_pos
-        print block_name
+        #print block_name
         return block_name
 
     def play_complex_block(self, block_name, stop_on_sound=False, motor_commands=None, play_sound='on', duration=500, activation='off', rule=[], rule_sign=[], lip='on', stop_at='block'):
-        print block_name, duration
+        #print block_name, duration
         FlowNode.block_player.load_block(block_name)
         new_motor_commands = FlowNode.block_player.stitch_blocks(block_before=self.prev_block,
                                                         block_after=self.next_block,
@@ -497,17 +502,23 @@ class FlowNode:
             else:
                 self.event_occured = False
         elif self.rule_sign == 'ROS':
-            print 'debug new rule ', FlowNode.block_player.world_event, ' : ', self.rule[0]
-            if FlowNode.block_player.world_event == self.rule[0]:
+            print 'ros event in runflow = ', FlowNode.block_player.ros_event_occured
+            if FlowNode.block_player.ros_event_occured == True:
                 self.event_occured = True
-                FlowNode.block_player.world_event = 'none'
             else:
                 self.event_occured = False
-        print 'event: ', self.event_name, ' detected: ', detected_props, ' rule: ', self.rule, 'event occured: ', self.event_occured
+
+        # print 'debug new rule ', FlowNode.block_player.world_event, ' : ', self.rule[0]
+        #    if FlowNode.block_player.world_event == self.rule[0]:
+        #        self.event_occured = True
+        #        FlowNode.block_player.world_event = 'none'
+        #    else:
+        #        self.event_occured = False
+        #print 'event: ', self.event_name, ' detected: ', detected_props, ' rule: ', self.rule, 'event occured: ', self.event_occured
 
         self.wrong_in_air = np.setdiff1d(self.rule,detected_props)
         self.wrong_on_console = np.setdiff1d(detected_props, self.rule)
-        print 'wrong in air: ', self.wrong_in_air, ' wrong on console: ', self.wrong_on_console
+        #print 'wrong in air: ', self.wrong_in_air, ' wrong on console: ', self.wrong_on_console
         #time.sleep(0.1)
 
 #flow = FlowNode()

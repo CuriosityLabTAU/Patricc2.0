@@ -53,8 +53,14 @@ class play_block():
         self.duration = 0.0
 
         self.lip_angle = []
+        self.event_activation = 'off'
+        self.rule = []
+        self.rule_sign = []
+        self.ros_event_occured = False
         self.world_action = 'none'
         self.world_event = 'none'
+        self.world_action_time = datetime.now()
+        self.world_action_timeout = 3
 
         self.motor_list = {'skeleton': [0, 1, 4, 5, 6, 7], 'head_pose': [2], 'lip': [3], 'full': [0, 1, 2, 3, 4, 5, 6, 7], 'full_idx': [1, 2, 3, 4, 5, 6, 7, 8]}
         self.robot_angle_range = robot_parameters.robot_angle_range
@@ -83,10 +89,24 @@ class play_block():
             time.sleep(dt)
 
     def world_callback(self, data):
+        #print 'event activation', self.event_activation
         msg = data.data
-        if msg != self.world_action:
-            self.world_action = msg
-            self.world_event = self.world_action
+        print 'callback = ', msg
+        self.world_action = msg
+        self.world_event = msg
+        self.world_action_time = datetime.now()
+        #if self.event_activation == 'on' and self.rule_sign == 'ROS':
+        #    if self.world_action == self.rule:
+        #        self.ros_event_occured = True
+        #    else:
+        #        self.ros_event_occured = False
+        #pygame.mixer.music.stop()
+
+
+
+        #if msg != self.world_action:
+        #    self.world_action = msg
+        #    self.world_event = self.world_action
 
 
     def rfid_callback(self, data):
@@ -211,7 +231,7 @@ class play_block():
                     if not is_playing and current_time >= self.sound_offset:
                         is_playing = True
                         pygame.mixer.music.play()
-                        print('playing')
+                        #print('playing')
 
                     if is_playing and stop_on_sound:
                         if not pygame.mixer.music.get_busy():
@@ -262,7 +282,7 @@ class play_block():
                     if not is_playing and current_time >= self.sound_offset:
                         is_playing = True
                         pygame.mixer.music.play()
-                        print('playing')
+                        #print('playing')
 
                     if is_playing and stop_on_sound:
                         if not pygame.mixer.music.get_busy():
@@ -291,10 +311,15 @@ class play_block():
                 break
             if activation=="on":
                 if self.check_prop_event(rule, rule_sign):
-                    a = self.check_prop_event(rule, rule_sign)
+                    #a = self.check_prop_event(rule, rule_sign)
                     #print 'rule is ', a
                     pygame.mixer.music.stop()
                     break
+                if self.ros_event_occured == True:
+                    pygame.mixer.music.stop()
+                    break
+
+
             new_item = motor_commands[iter, :]
             current_time = new_item[0] - first_item[0]
 
@@ -321,7 +346,7 @@ class play_block():
                         is_playing = True
                         if play_sound=='on':
                             pygame.mixer.music.play()
-                        print('playing')
+                        #print('playing')
                 if stop_at=='sound':
                     if pygame.mixer.music.get_busy()==False:
                         break
@@ -365,6 +390,7 @@ class play_block():
             motor_commands = self.convert_to_motor_commands()
         filtered_motor_commands = self.edit(motor_commands)
         self.play_motor_commands(motor_commands=filtered_motor_commands, stop_on_sound=stop_on_sound, play_sound=play_sound, duration=duration, activation=activation, rule=rule, rule_sign=rule_sign, lip=lip, stop_at=stop_at)
+        #print 'rule sign = ', self.rule_sign, 'rule = ', self.rule
 
     def load_files(self):
         self.lip_angle = []
@@ -486,9 +512,10 @@ class play_block():
         return sub_block
 
     def check_prop_event(self, rule, rule_sign):
+        #print 'event activation', self.event_activation
         detected_props = [x for x in self.rfids if x != None]
         prop_event_occured = False
-        #print 'the rule is:', rule
+        print 'the rule is:', rule, rule_sign
         if rule_sign=='is_on_console':
             if set(rule).issubset(set(detected_props))==True:
                 prop_event_occured = True
@@ -529,10 +556,13 @@ class play_block():
             print 'debug new rule ', self.world_event, ' : ', rule[0]
             if self.world_event == rule[0]:
                 prop_event_occured = True
-                print 'event:' , prop_event_occured
+                self.ros_event_occured = True
+                #print 'event:' , prop_event_occured
                 #self.world_event = 'none'
+                print 'ros event in playblock = ', self.ros_event_occured, 'world event = ', self.world_event, 'rule = ', rule[0]
             else:
                 prop_event_occured = False
+                self.ros_event_occured = False
         #print 'prop event check in play block = ', prop_event_occured
         return prop_event_occured
 
