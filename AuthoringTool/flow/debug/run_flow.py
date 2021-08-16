@@ -92,13 +92,14 @@ class FlowNode:
                     self.flow[step_desc[0]]['motor_commands'] = self.convert_mixed(self.flow[step_desc[0]])
 
                 elif step_desc[1].lstrip() == 'mixed_block':
+                    print step_desc[2].lstrip(), step_desc[3].lstrip()
                     self.flow[step_desc[0]] = {
                         'type': 'mixed_block',
-                        'block': step_desc[2].lstrip(),
-                        'sound': step_desc[3].lstrip(),
-                        'prop': step_desc[4].lstrip(),
-                        'lip': step_desc[5].lstrip(),
-                        'stop': step_desc[6].lstrip(),
+                        'block': step_desc[2].lstrip(),# motion block
+                        'sound': step_desc[3].lstrip(), # audio file name to play
+                        'prop': step_desc[4].lstrip(), # prop name/NONE
+                        'lip': step_desc[5].lstrip(), # on/off - move or dont move lips
+                        'stop': step_desc[6].lstrip(),# motion/sound - when to stop block
                         'next': step_desc[7].lstrip().split(' ')
                     }
                 elif step_desc[1].lstrip() == 'gaze_towards':
@@ -281,6 +282,11 @@ class FlowNode:
                 self.play_complex_block(block_name, activation=self.activation, rule=self.rule, rule_sign=self.rule_sign)
                 print 'next step is ', self.flow[current_step[0]]['next']
                 current_step = [self.flow[current_step[0]]['next']]
+
+            elif self.flow[current_step[0]]['type'] == 'ros_publish':
+                FlowNode.block_player.ros_publish(self.flow[current_step[0]]['publish'])
+                current_step = [self.flow[current_step[0]]['next']]
+
 
             else:
                 block_name = self.get_block_name(current_step)

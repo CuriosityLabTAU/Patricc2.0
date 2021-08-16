@@ -47,6 +47,8 @@ class BackgroundAudio():
                        'sheep':{'yummy':[], 'yuck':[], 'drink':[], 'yawn':[], 'bored':[], 'regular':[]}}
         self.wake_up_time = [15, 45]
         self.max_sleep = 60
+        self.max_game_time = 300
+        self.game_start_time = datetime.now()
         self.last_action = 'start'
         self.sleep_log = {'cow': {'sleep':'false', 'time':datetime.now()},
                           'donkey': {'sleep':'false', 'time':datetime.now()},
@@ -110,6 +112,7 @@ class BackgroundAudio():
         elif self.activation == 'on':
             if msg != 'game_2':
                 self.activation = 'off'
+        print msg
 
     def reset(self):
         self.rfids = [None for i in range(5)]
@@ -163,7 +166,9 @@ class BackgroundAudio():
             if mixer.music.get_busy()==False:
                 #print 'here', self.rfids, self.is_rfid_change
                 current_time = datetime.now()
-                if (current_time-self.last_action_time).total_seconds() > self.wake_up_time[0] and self.last_action != 'regular':
+                if (current_time-self.game_start_time).total_seconds() > self.max_game_time:
+                    self.last_action = 'times_up'
+                elif (current_time-self.last_action_time).total_seconds() > self.wake_up_time[0] and self.last_action != 'regular':
                     #print (current_time-self.last_action_time).total_seconds()
                     self.play_sound(random.choice(self.animals), 'regular')
                     self.last_action_time = datetime.now()

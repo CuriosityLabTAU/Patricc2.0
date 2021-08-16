@@ -6,63 +6,50 @@ props, banana orange avocado strawberry lemon
 start, loop_block, snoring, 5, on, a_1
 a_1, block, yawn, a_2
 a_2, block, hi my name is fuzzy, a_3
-a_3,block, stomach sound, a_4
+a_3, block, stomach sound, a_4
 a_4, block, did you hear that that was my tummy, a_5
 a_5, block, Im so hungry, b_1
 
 #, set props on console
 b_1, block, can you get the fruit from the basket, b_2
-b_2, Put them one by one on the plates, b_3
+b_2, block, Put them one by one on the plates, b_3
 b_3, prop_event, check_all_on_console, on, positive, banana orange avocado strawberry lemon, b_8, b_5
 b_5, prop_event, detect_change, on, negative, CURRENT,b_6, b_7
-b_6, mixed_block, waiting, a {}, WRONG_ON_CONSOLE, b_3
+b_6, mixed_block, waiting, a {}, WRONG_ON_CONSOLE, on, sound, b_3
 b_7, loop_block, idle_1, 5, on, b_5
 b_8, block, great, b_end
 b_end, block, Well done Everything is ready Lets begin, c_1
 
-#, fuzzy asks for a banana - with hint
+#, fuzzy asks for a banana - no hint
 c_1, prop_event, put_down_all_props, on, negative, banana orange avocado strawberry lemon, z_2, c_2
-c_2, prop_event, put_down_all_props, off, negative, banana orange avocado strawberry lemon, z_2, c_3
-c_3, block, can you feed me, c_4
-c_4, loop_block, idle_1, 2, on, c_5
-c_5, block,fantastic, c_6
-c_6, block, lets see with tounge, c_7
-c_7, rfid_block, banana, point, a banana, c_8
-c_8, rfid_block, lemon, point, a lemon, c_9
+c_2, prop_event, put_down_all_props, off, negative, banana orange avocado strawberry lemon, z_2, c_9
 c_9, block, mmm can I have a bannana please, c_10
-c_10, prop_event, pick_up_banana, on, negative, lemon banana orange avocado strawberry, c_11, c_15
-c_15, rfid_block, banana, hint_b, breath2, c_151
+c_10, prop_event, pick_up_banana, on, negative, lemon banana orange avocado strawberry, c_11, c_151
 c_151, loop_block, idle_2, 10, on, c_16
 c_16, block, can you give me a banana, c_10
 c_11, prop_event, pick_up_banana_2, on, negative, lemon orange avocado strawberry, c_17, c_12
-c_17, block, that isnt a banana 2, c_18
+c_17, block, that isnt a banana, c_18
 c_18, prop_block, that is a {}, WRONG_IN_AIR, c_19
-c_19, loop_block, idle_2, 5, on, c_9
+c_19, loop_block, idle_2, 2, on, c_9
 c_12, prop_event, pick_up_banana_2, off, negative, lemon orange avocado strawberry, c_13, c_13
-c_13, block, mmmm yummy, c_14
-c_14, block, thank you very much, c_end
+c_13, block, mmm yummy2, c_14
+c_14, block, very good, c_end
 c_end, prop_event, put_down_all_props, on, negative, lemon banana orange avocado strawberry, z_2, d_1
 
-#, fuzzy asks for a lemon - with hint
+#, fuzzy asks for a lemon - no hint
 d_1, prop_event, put_down_all_props, on, negative, banana orange avocado strawberry lemon, z_2, d_2
-d_2, prop_event, put_down_all_props, off, negative, banana orange avocado strawberry lemon, z_2, d_3
-d_3, block, what do i want to eat now, d_6
-d_6, block, lets see with tounge, d_7
-d_7, rfid_block, lemon, point, a lemon, d_71
-d_71, rfid_block, strawberry, point, a strawberry, d_8
-d_8, rfid_block, orange, point, a orange, d_91
-d_91, block, i know, d_9
-d_9, block, can you give me a lemon, d_10
-d_10, prop_event, pick_up_banana, on, negative, lemon banana orange avocado strawberry, d_11, d_15
-d_15, rfid_block, lemon, hint_b, breath2, d_151
+d_2, prop_event, put_down_all_props, off, negative, banana orange avocado strawberry lemon, z_2, d_9
+d_9, block, mmm can I have a lemon please, d_10
+d_10, prop_event, pick_up_lemon, on, negative, lemon banana orange avocado strawberry, d_11, d_151
 d_151, loop_block, idle_2, 10, on, d_16
-d_16, block, wheres that lemon, d_10
+d_16, block, can you give me a lemon, d_10
 d_11, prop_event, pick_up_lemon_2, on, negative, banana orange avocado strawberry, d_17, d_12
 d_17, block, that isnt a lemon, d_18
 d_18, prop_block, that is a {}, WRONG_IN_AIR, d_19
 d_19, loop_block, idle_2, 2, on, d_9
 d_12, prop_event, pick_up_lemon_2, off, negative, banana orange avocado strawberry, d_13, d_13
-d_13, block, mmm I love lemon, d_end
+d_13, block, mmm yummy2, d_14
+d_14, block, very good, d_end
 d_end, prop_event, put_down_all_props, on, negative, lemon banana orange avocado strawberry, z_2, f_1
 
 #, what fruit do you like
@@ -76,7 +63,7 @@ f_end, prop_event, put_down_all_props, on, negative, lemon banana orange avocado
 
 #, fuzzy asks for a strawberry - no hint
 e_1, prop_event, put_down_all_props, on, negative, banana orange avocado strawberry lemon, z_2, e_2
-e_2, prop_event, put_down_all_props, off, negative, banana orange avocado strawberry lemon, z_2, e_9
+e_2, prop_event, put_down_all_props, off, nwaitingegative, banana orange avocado strawberry lemon, z_2, e_9
 e_9, block, mmm can I have a strawberry please, e_10
 e_10, prop_event, pick_up_strawberry, on, negative, lemon banana orange avocado strawberry, e_11, e_151
 e_151, loop_block, idle_2, 10, on, e_16
@@ -182,7 +169,7 @@ j_4, block, ending yawn, j_5
 j_5, block, snoring, end
 
 #, routine- put down all props
-z_2, mixed_block, put_down_1_a, put the {} down, WRONG_IN_AIR, z_3
+z_2, mixed_block, put_down_1_a, put the {} down, WRONG_IN_AIR, on, motion, z_3
 z_3, prop_event, everything_is_down, on, positive, banana orange avocado strawberry lemon, z_5, z_4
 z_4, loop_block, idle_2, 10, on ,z_2
 z_5, block, great, z_6

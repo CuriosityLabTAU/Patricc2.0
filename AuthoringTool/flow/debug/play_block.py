@@ -566,6 +566,8 @@ class play_block():
         #print 'prop event check in play block = ', prop_event_occured
         return prop_event_occured
 
+    def ros_publish(self, message):
+        self.game_activator.publish(message)
 
 
     # behavioral filters
