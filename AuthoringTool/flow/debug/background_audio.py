@@ -19,7 +19,7 @@ class BackgroundAudio():
         self.rfids = [None for i in range(5)]
         self.activation = 'on'
         self.animal_states  = {'cow':'sleeping', 'donkey':'sleeping', 'sheep':'sleeping'}
-        self.cover = ['orange', 'strawberry', 'water', 'lemon', 'banana']
+        self.cover = ['banana', 'lemon', 'water', 'strawberry', 'orange'] #['orange', 'strawberry', 'water', 'lemon', 'banana']
         self.animals = ['cow', 'donkey', 'sheep']
         self.is_rfid_change = False
         self.rfid_change = []
@@ -170,14 +170,18 @@ class BackgroundAudio():
                     self.last_action = 'times_up'
                 elif (current_time-self.last_action_time).total_seconds() > self.wake_up_time[0] and self.last_action != 'regular':
                     #print (current_time-self.last_action_time).total_seconds()
-                    self.play_sound(random.choice(self.animals), 'regular')
+                    random_animal = random.choice(self.animals)
+                    #self.play_sound(random.choice(self.animals), 'regular')
+                    self.play_sound(random_animal, 'regular')
                     self.last_action_time = datetime.now()
-                    self.last_action = 'regular'
+                    self.last_action = 'regular' + ',' + random_animal + ',' + 'none'
                     self.world_publisher.publish(self.last_action)
                 elif (current_time-self.last_action_time).total_seconds() > self.wake_up_time[1] and self.last_action != 'bored':
-                    self.play_sound(random.choice(self.animals), 'bored')
+                    random_animal = random.choice(self.animals)
+                    #self.play_sound(random.choice(self.animals), 'bored')
+                    self.play_sound(random_animal, 'bored')
                     self.last_action_time = datetime.now()
-                    self.last_action = 'bored'
+                    self.last_action = 'bored' + ',' + random_animal + ',' + 'none'
                     self.world_publisher.publish(self.last_action)
                 elif self.is_rfid_change==True:
                     animal = self.rfid_change[0]
@@ -191,23 +195,24 @@ class BackgroundAudio():
                                 self.eat_log[animal]['eat'] += 1
                                 self.eat_log[animal]['action'] += 1
                                 self.play_sound(animal, 'yummy')
-                                self.last_action = 'yummy'
+                                #self.last_action = 'yummy'
+                                self.last_action = 'yummy' + ',' + animal + ',' + food
                                 self.world_publisher.publish(self.last_action)
                             elif food in self.food_preferences[animal]['dislike']:
                                 self.eat_log[animal]['action'] += 1
                                 self.play_sound(animal, 'yuck')
-                                self.last_action = 'yuck'
+                                self.last_action = 'yuck' + ',' + animal + ',' + food
                                 self.world_publisher.publish(self.last_action)
                             elif food == 'water':
                                 self.eat_log[animal]['action'] += 1
                                 self.play_sound(animal, 'drink')
-                                self.last_action = 'drink'
+                                self.last_action = 'drink' + ',' + animal + ',' + food
                                 self.world_publisher.publish(self.last_action)
                             if self.eat_log[animal]['action']>self.max_activity or self.eat_log[animal]['eat']>self.max_eat:
                                 while mixer.music.get_busy():
                                     time.sleep(0.1)
                                 self.play_sound(animal, 'yawn')
-                                self.last_action = 'yawn'
+                                self.last_action = 'yawn' + ',' + animal + ',' + food
                                 self.eat_log[animal]['action'] = 0
                                 self.eat_log[animal]['eat'] = 0
                                 self.sleep_log[animal]['sleep'] = 'true'

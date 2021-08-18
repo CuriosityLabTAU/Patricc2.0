@@ -133,6 +133,7 @@ class FlowNode:
                         'prop' : step_desc[3].lstrip(),
                         'next': step_desc[4].lstrip().split(' ')
                     }
+
                 elif step_desc[1].lstrip() == 'rfid_block':
                     self.flow[step_desc[0]] = {
                         'type': step_desc[1].lstrip(),
@@ -259,6 +260,15 @@ class FlowNode:
                     else:
                         sound_temp = 'breath'
                         block_name = './blocks/game_1/waiting'
+                elif self.flow[current_step[0]]['prop'] == 'ROS':
+                    if FlowNode.block_player.world_food != 'none':
+                        temp_prop = [FlowNode.block_player.world_animal, FlowNode.block_player.world_food]
+                    else:
+                        temp_prop = FlowNode.block_player.world_animal
+                    print 'this is temp prop:   ', temp_prop
+                    sound_temp = self.flow[current_step[0]]['sound'].format(temp_prop)
+                    block_name = self.get_block_name(current_step)
+
 
                 FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.mp3'
                 FlowNode.block_player.lip_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.csv'
@@ -274,13 +284,13 @@ class FlowNode:
                 FlowNode.block_player.sound_filename = None
                 FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + self.flow[current_step[0]]['sound'] + '.mp3'
                 FlowNode.block_player.lip_filename = self.base_path + 'sounds/' + self.flow['path'] + self.flow[current_step[0]]['sound'] + '.csv'
-                print 'check 1:', current_step[0], ',', self.flow[current_step[0]]['next']
+                #print 'check 1:', current_step[0], ',', self.flow[current_step[0]]['next']
                 self.next_block = self.get_block_name([self.flow[current_step[0]]['next']])
                 FlowNode.block_player.update_rifd()
                 stop_on_sound = False #self.flow[current_step]['type'] == 'point' #TODO
                 #self.play_complex_block(block_name, stop_on_sound=stop_on_sound, activation=self.activation)
                 self.play_complex_block(block_name, activation=self.activation, rule=self.rule, rule_sign=self.rule_sign)
-                print 'next step is ', self.flow[current_step[0]]['next']
+                #print 'next step is ', self.flow[current_step[0]]['next']
                 current_step = [self.flow[current_step[0]]['next']]
 
             elif self.flow[current_step[0]]['type'] == 'ros_publish':
@@ -508,7 +518,7 @@ class FlowNode:
             else:
                 self.event_occured = False
         elif self.rule_sign == 'ROS':
-            print 'ros event in runflow = ', FlowNode.block_player.ros_event_occured
+            #print 'ros event in runflow = ', FlowNode.block_player.ros_event_occured
             if FlowNode.block_player.ros_event_occured == True:
                 self.event_occured = True
             else:

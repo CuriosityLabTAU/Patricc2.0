@@ -4,6 +4,7 @@ props, cow donkey sheep
 cover, banana lemon water strawberry orange
 
 #, introduction
-start, loop_block, yawn, 1, on, 1
+start, loop_block, yawn, 1, on, 3
 1, ros_publish, game_2, 2
+3, mixed_block, idle_1, the {} is eating a {}, ROS, on, sound, 2
 2, block, yawn, end
