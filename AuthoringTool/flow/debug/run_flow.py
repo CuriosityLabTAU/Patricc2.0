@@ -266,7 +266,8 @@ class FlowNode:
                     else:
                         temp_prop = FlowNode.block_player.world_animal
                     print 'this is temp prop:   ', temp_prop
-                    sound_temp = self.flow[current_step[0]]['sound'].format(temp_prop)
+                    print 'sound: ', self.flow[current_step[0]]['sound']
+                    sound_temp = self.flow[current_step[0]]['sound'].format(*temp_prop)
                     block_name = self.get_block_name(current_step)
 
 
