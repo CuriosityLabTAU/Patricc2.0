@@ -17,7 +17,7 @@ import random
 class BackgroundAudio():
     def __init__(self):
         self.rfids = [None for i in range(5)]
-        self.activation = 'on'
+        self.activation = 'off'
         self.animal_states  = {'cow':'sleeping', 'donkey':'sleeping', 'sheep':'sleeping'}
         self.cover = ['banana', 'lemon', 'water', 'strawberry', 'orange'] #['orange', 'strawberry', 'water', 'lemon', 'banana']
         self.animals = ['cow', 'donkey', 'sheep']
@@ -45,8 +45,8 @@ class BackgroundAudio():
         self.sounds = {'cow':{'yummy':[], 'yuck':[], 'drink':[], 'yawn':[], 'bored':[], 'regular':[]},
                        'donkey':{'yummy':[], 'yuck':[], 'drink':[], 'yawn':[], 'bored':[], 'regular':[]},
                        'sheep':{'yummy':[], 'yuck':[], 'drink':[], 'yawn':[], 'bored':[], 'regular':[]}}
-        self.wake_up_time = [15, 45]
-        self.max_sleep = 60
+        self.wake_up_time = [60, 90]
+        self.max_sleep = 120
         self.max_game_time = 300
         self.game_start_time = datetime.now()
         self.last_action = 'start'
@@ -160,6 +160,7 @@ class BackgroundAudio():
 
 
     def controller(self):
+        print 'activation: ', self.activation
         #print 'here'
         #self.world_publisher.publish('hello hello')
         if self.activation=='on':
@@ -198,6 +199,7 @@ class BackgroundAudio():
                                 #self.last_action = 'yummy'
                                 self.last_action = 'yummy' + ',' + animal + ',' + food
                                 self.world_publisher.publish(self.last_action)
+                                print "published"
                             elif food in self.food_preferences[animal]['dislike']:
                                 self.eat_log[animal]['action'] += 1
                                 self.play_sound(animal, 'yuck')

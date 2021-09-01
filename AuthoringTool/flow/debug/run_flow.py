@@ -176,7 +176,8 @@ class FlowNode:
         current_prop = []
         self.exit_step = {}
         while current_step[0] != 'end':
-            print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
+            print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", \
+                self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
             if current_step[0] == 'exit_step':
                 current_step[0] = self.exit_step[current_step[1]]
             if self.activation=='on':
@@ -208,6 +209,7 @@ class FlowNode:
                 current_step = self.flow[current_step[0]]['next']
 
             elif self.flow[current_step[0]]['type'] == 'prop_event':
+                print "event check time: ", datetime.now()
                 self.activation = self.flow[current_step[0]]['activation']
                 FlowNode.block_player.event_activation = self.activation
                 self.event_name = self.flow[current_step[0]]['event_name']
@@ -520,11 +522,19 @@ class FlowNode:
                 self.event_occured = False
         elif self.rule_sign == 'ROS':
             #print 'ros event in runflow = ', FlowNode.block_player.ros_event_occured
+            temp_event_occured = FlowNode.block_player.check_prop_event(self.rule, self.rule_sign)
             if FlowNode.block_player.ros_event_occured == True:
                 self.event_occured = True
             else:
                 self.event_occured = False
-
+        elif self.rule_sign == 'ROS_change':
+            #print 'ros event in runflow 1  = ', FlowNode.block_player.ros_event_occured, FlowNode.block_player.new_ros_event
+            #temp_event_occured = FlowNode.block_player.check_prop_event(self.rule, self.rule_sign)
+            #print 'ros event in runflow 2 = ', FlowNode.block_player.ros_event_occured, FlowNode.block_player.new_ros_event
+            if FlowNode.block_player.ros_event_occured == True:
+                self.event_occured = True
+            else:
+                self.event_occured = False
         # print 'debug new rule ', FlowNode.block_player.world_event, ' : ', self.rule[0]
         #    if FlowNode.block_player.world_event == self.rule[0]:
         #        self.event_occured = True

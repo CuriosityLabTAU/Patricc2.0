@@ -1,0 +1,21 @@
+robot, fuzzy
+path, game_2
+props, cow donkey sheep
+cover, banana lemon water strawberry orange
+
+#, introduction
+start, loop_block, yawn, 3, on, b_2
+a_1, block, im so happy, b_3
+
+#, start farm animals
+b_1, ros_publish, game_2, b_2
+b_2, prop_event, is_ROS_change, on, ROS_change, none, d_1, b_3
+d_1, block, good job, c_1
+c_1, prop_event, test_ros1, on, ROS, bbb, a_1, c_2
+c_2, prop_event, test_ros2, on, ROS, yummy, a_1, c_3
+c_3, prop_event, test_ros3, on, ROS, bbb, a_1, c_4
+c_4, prop_event, test_ros4, on, ROS, bbb, a_1, c_5
+c_5, prop_event, test_ros5, on, ROS, bbb, a_1, b_4
+
+b_3, loop_block, idle_1, 10, on, b_2
+b_4, block, great, end

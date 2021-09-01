@@ -59,6 +59,7 @@ class play_block():
         self.ros_event_occured = False
         self.world_action = 'none'
         self.world_event = 'none'
+        self.world_event_old = 'none'
         self.world_action_time = datetime.now()
         self.world_action_timeout = 3
         self.world_animal = 'none'
@@ -74,7 +75,7 @@ class play_block():
         self.motor_speed = robot_parameters.motor_speed
 
         rospy.init_node('block_player')
-        #self.game_activator.publish('game_2')
+        self.game_activator.publish('game_2')
         time.sleep(1)
         print 'open node'
 
@@ -97,24 +98,15 @@ class play_block():
         print 'callback = ', msg
         msg_split = msg.split(',')
         print msg_split
+        #self.world_event_old = self.world_event
         self.world_action = msg_split[0]
         self.world_event = msg_split[0]
         self.world_action_time = datetime.now()
         self.world_animal = msg_split[1]
         self.world_food = msg_split[2]
+        #if self.world_event_old != self.world_event:
         self.new_ros_event  = 'true'
-        #if self.event_activation == 'on' and self.rule_sign == 'ROS':
-        #    if self.world_action == self.rule:
-        #        self.ros_event_occured = True
-        #    else:
-        #        self.ros_event_occured = False
-        #pygame.mixer.music.stop()
 
-
-
-        #if msg != self.world_action:
-        #    self.world_action = msg
-        #    self.world_event = self.world_action
 
 
     def rfid_callback(self, data):
@@ -523,6 +515,7 @@ class play_block():
         #print 'event activation', self.event_activation
         detected_props = [x for x in self.rfids if x != None]
         prop_event_occured = False
+        self.ros_event_occured = False
         #print 'the rule is:', rule, rule_sign
         if rule_sign=='is_on_console':
             if set(rule).issubset(set(detected_props))==True:
@@ -561,13 +554,11 @@ class play_block():
             else:
                 prop_event_occured = False
         elif rule_sign == 'ROS':
-            #print 'debug new rule ', self.world_event, ' : ', rule[0]
+            print 'debug new rule ', self.world_event, ' : ', rule[0]
             if self.world_event == rule[0]:
                 prop_event_occured = True
                 self.ros_event_occured = True
-                #print 'event:' , prop_event_occured
-                #self.world_event = 'none'
-                #print 'ros event in playblock = ', self.ros_event_occured, 'world event = ', self.world_event, 'rule = ', rule[0]
+
             else:
                 prop_event_occured = False
                 self.ros_event_occured = False
@@ -577,9 +568,8 @@ class play_block():
                 prop_event_occured = True
                 self.ros_event_occured = True
                 self.new_ros_event = 'false'
-                #print 'event:' , prop_event_occured
-                #self.world_event = 'none'
-                #print 'ros event in playblock = ', self.ros_event_occured, 'world event = ', self.world_event, 'rule = ', rule[0]
+                print "ROS change event"
+
             else:
                 prop_event_occured = False
                 self.ros_event_occured = False
