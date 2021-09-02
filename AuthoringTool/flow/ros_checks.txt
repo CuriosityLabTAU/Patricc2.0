@@ -1,7 +1,7 @@
 robot, fuzzy
 path, game_2
 props, cow donkey sheep
-cover, banana lemon water strawberry orange
+cover, orange strawberry water lemon banana
 
 #, introduction
 start, loop_block, yawn, 1, on, 2
