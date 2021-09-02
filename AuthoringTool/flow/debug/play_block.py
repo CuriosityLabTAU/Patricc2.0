@@ -101,6 +101,7 @@ class play_block():
         #self.world_event_old = self.world_event
         self.world_action = msg_split[0]
         self.world_event = msg_split[0]
+        #if self.world_event_old ==
         self.world_action_time = datetime.now()
         self.world_animal = msg_split[1]
         self.world_food = msg_split[2]

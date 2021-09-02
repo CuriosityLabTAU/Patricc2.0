@@ -187,6 +187,7 @@ class FlowNode:
                     current_step[0] = self.event_goto
                     self.activation = "off"
                     FlowNode.block_player.event_activation = self.activation
+                    FlowNode.block_player.ros_event_occured = False
             #print "current step : ", current_step[0], 'new', self.flow[current_step[0]]['type']
             if self.flow[current_step[0]]['type'] == 'loop_block':
                 block_name = self.get_block_name(current_step)
