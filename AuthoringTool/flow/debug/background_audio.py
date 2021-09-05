@@ -118,7 +118,7 @@ class BackgroundAudio():
         self.rfids = [None for i in range(5)]
         self.activation = 'on'
         self.animal_states  = {'cow':'sleeping', 'donkey':'sleeping', 'sheep':'sleeping'}
-        self.cover = ['orange', 'strawberry', 'water', 'lemon', 'banana']
+        self.cover = ['banana', 'lemon', 'water', 'strawberry', 'orange']
         self.animals = ['cow', 'donkey', 'sheep']
         self.is_rfid_change = False
         self.rfid_change = []

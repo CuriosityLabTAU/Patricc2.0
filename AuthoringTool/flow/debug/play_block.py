@@ -75,7 +75,7 @@ class play_block():
         self.motor_speed = robot_parameters.motor_speed
 
         rospy.init_node('block_player')
-        self.game_activator.publish('game_2')
+        #self.game_activator.publish('game_2')
         time.sleep(1)
         print 'open node'
 
@@ -95,9 +95,8 @@ class play_block():
     def world_callback(self, data):
         #print 'event activation', self.event_activation
         msg = data.data
-        print 'callback = ', msg
+        print 'PLAY BLOCK: got message from world = ', msg
         msg_split = msg.split(',')
-        print msg_split
         #self.world_event_old = self.world_event
         self.world_action = msg_split[0]
         self.world_event = msg_split[0]
@@ -555,8 +554,9 @@ class play_block():
             else:
                 prop_event_occured = False
         elif rule_sign == 'ROS':
-            print 'debug new rule ', self.world_event, ' : ', rule[0]
+            print 'PLAY BLOCK: debug new rule ', self.world_event, ' : ', rule[0]
             if self.world_event == rule[0]:
+                self.world_event = 'none'
                 prop_event_occured = True
                 self.ros_event_occured = True
 
@@ -564,12 +564,12 @@ class play_block():
                 prop_event_occured = False
                 self.ros_event_occured = False
         elif rule_sign == 'ROS_change':
-            #print 'debug new rule ', self.world_event, ' : ', rule[0]
+            print "PLAY BLOCK: check ROS change rule"
             if self.new_ros_event == 'true':
                 prop_event_occured = True
                 self.ros_event_occured = True
                 self.new_ros_event = 'false'
-                print "ROS change event"
+                print "PLAY BLOCK: ROS event changed"
 
             else:
                 prop_event_occured = False

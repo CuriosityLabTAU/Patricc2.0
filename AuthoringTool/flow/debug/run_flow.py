@@ -143,6 +143,17 @@ class FlowNode:
                         'next': step_desc[5].lstrip()
                     }
 
+                elif step_desc[1].lstrip() == 'ROS_prop_block':
+                    self.flow[step_desc[0]] = {
+                        'type': step_desc[1].lstrip(),
+                        'point prop': step_desc[2].lstrip(),
+                        'block':step_desc[3].lstrip(),
+                        'sound': step_desc[4].lstrip(),
+                        'sound prop': step_desc[5].lstrip(),
+                        'stop': step_desc[6].lstrip(),
+                        'next': step_desc[7].lstrip()
+                    }
+
                 elif step_desc[1].lstrip() == 'ros_publish':
                     self.flow[step_desc[0]] = {
                         'type': step_desc[1].lstrip(),
@@ -176,13 +187,16 @@ class FlowNode:
         current_prop = []
         self.exit_step = {}
         while current_step[0] != 'end':
-            print  "event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", \
+            print  "RUNFLOW: event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", \
                 self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
+            print "RUNFLOW: props: ", FlowNode.block_player.rfids
             if current_step[0] == 'exit_step':
                 current_step[0] = self.exit_step[current_step[1]]
             if self.activation=='on':
+                print "RUNFLOW: checking event"
                 self.check_event()
                 if self.event_occured == True or FlowNode.block_player.ros_event_occured == True:
+                    print "RUNFLOW: event happend"
                     self.exit_step[self.event_name] = current_step[0]
                     current_step[0] = self.event_goto
                     self.activation = "off"
@@ -210,7 +224,7 @@ class FlowNode:
                 current_step = self.flow[current_step[0]]['next']
 
             elif self.flow[current_step[0]]['type'] == 'prop_event':
-                print "event check time: ", datetime.now()
+                #print "RUNFLOW: event check time: ", datetime.now()
                 self.activation = self.flow[current_step[0]]['activation']
                 FlowNode.block_player.event_activation = self.activation
                 self.event_name = self.flow[current_step[0]]['event_name']
@@ -264,16 +278,18 @@ class FlowNode:
                         sound_temp = 'breath'
                         block_name = './blocks/game_1/waiting'
                 elif self.flow[current_step[0]]['prop'] == 'ROS':
-                    if FlowNode.block_player.world_food != 'none':
-                        temp_prop = [FlowNode.block_player.world_animal, FlowNode.block_player.world_food]
+                    if len(FlowNode.block_player.world_animal)>0:
+                        if FlowNode.block_player.world_food != 'none':
+                            temp_prop = [FlowNode.block_player.world_animal, FlowNode.block_player.world_food]
+                        else:
+                            temp_prop = FlowNode.block_player.world_animal
+                        sound_temp = self.flow[current_step[0]]['sound'].format(*temp_prop)
+                        block_name = self.get_block_name(current_step)
                     else:
-                        temp_prop = FlowNode.block_player.world_animal
-                    print 'this is temp prop:   ', temp_prop
-                    print 'sound: ', self.flow[current_step[0]]['sound']
-                    sound_temp = self.flow[current_step[0]]['sound'].format(*temp_prop)
-                    block_name = self.get_block_name(current_step)
-
-
+                        sound_temp = 'breath'
+                        block_name = './blocks/game_1/waiting'
+                    #print 'RUNFLOW: this is temp prop:   ', temp_prop
+                    #print 'RUNFLOW: sound: ', self.flow[current_step[0]]['sound']
                 FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.mp3'
                 FlowNode.block_player.lip_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.csv'
                 #print "testing ", block_name, sound_temp, FlowNode.block_player.sound_filename,FlowNode.block_player.lip_filename
@@ -362,6 +378,8 @@ class FlowNode:
             elif self.flow[current_step[0]]['type'] == 'rfid_block':
                 if self.flow[current_step[0]]['prop']=='WRONG_ON_CONSOLE':
                     block_name = self.get_rfid_block(self.wrong_on_console,self.flow[current_step[0]]['block'])
+                elif self.flow[current_step[0]]['prop']=='ROS':
+                    block_name = self.get_rfid_block(FlowNode.block_player.world_animal,self.flow[current_step[0]]['block'])
                 else:
                     block_name = self.get_rfid_block(self.flow[current_step[0]]['prop'],self.flow[current_step[0]]['block'])
             elif self.flow[current_step[0]]['type'] == 'mixed':
@@ -400,7 +418,7 @@ class FlowNode:
         return block_name
 
     def play_complex_block(self, block_name, stop_on_sound=False, motor_commands=None, play_sound='on', duration=500, activation='off', rule=[], rule_sign=[], lip='on', stop_at='block'):
-        #print block_name, duration
+        print "RUNFLOW: playing block: ", block_name
         FlowNode.block_player.load_block(block_name)
         new_motor_commands = FlowNode.block_player.stitch_blocks(block_before=self.prev_block,
                                                         block_after=self.next_block,
@@ -524,6 +542,7 @@ class FlowNode:
         elif self.rule_sign == 'ROS':
             #print 'ros event in runflow = ', FlowNode.block_player.ros_event_occured
             temp_event_occured = FlowNode.block_player.check_prop_event(self.rule, self.rule_sign)
+            print "RUNFLOW: in checking evet: ", FlowNode.block_player.ros_event_occured
             if FlowNode.block_player.ros_event_occured == True:
                 self.event_occured = True
             else:
