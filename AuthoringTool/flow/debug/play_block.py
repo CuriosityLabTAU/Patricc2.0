@@ -580,6 +580,9 @@ class play_block():
     def ros_publish(self, message):
         self.game_activator.publish(message)
 
+    def publish_gaze_mode(self, message):
+        self.mode_publisher.publish(message)
+
 
     # behavioral filters
     def behavioral_filters(self, filtered_motor_commands):

@@ -161,6 +161,13 @@ class FlowNode:
                         'next': step_desc[3].lstrip()
                     }
 
+                elif step_desc[1].lstrip() == 'gaze_mode':
+                    self.flow[step_desc[0]] = {
+                        'type': step_desc[1].lstrip(),
+                        'mode': step_desc[2].lstrip(),
+                        'next': step_desc[3].lstrip()
+                    }
+
                 elif step_desc[0].lstrip() == '#':
                     pass
                 else:
@@ -317,6 +324,9 @@ class FlowNode:
                 FlowNode.block_player.ros_publish(self.flow[current_step[0]]['publish'])
                 current_step = [self.flow[current_step[0]]['next']]
 
+            elif self.flow[current_step[0]]['type'] == 'gaze_mode':
+                FlowNode.block_player.publish_gaze_mode(self.flow[current_step[0]]['mode'])
+                current_step = [self.flow[current_step[0]]['next']]
 
             else:
                 block_name = self.get_block_name(current_step)
