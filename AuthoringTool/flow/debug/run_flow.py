@@ -100,7 +100,8 @@ class FlowNode:
                         'prop': step_desc[4].lstrip(), # prop name/NONE
                         'lip': step_desc[5].lstrip(), # on/off - move or dont move lips
                         'stop': step_desc[6].lstrip(),# motion/sound - when to stop block
-                        'next': step_desc[7].lstrip().split(' ')
+                        'gaze': step_desc[7].lstrip(),# gaze - gaze_face/gaze_motion
+                        'next': step_desc[8].lstrip().split(' ')
                     }
                 elif step_desc[1].lstrip() == 'gaze_towards':
                     self.flow[step_desc[0]] = {
@@ -114,7 +115,8 @@ class FlowNode:
                         'block': step_desc[2].lstrip(),
                         'duration': step_desc[3].lstrip(),
                         'play_sound': step_desc[4].lstrip(),
-                        'next': step_desc[5].lstrip().split(' ')
+                        'gaze': step_desc[5].lstrip(),
+                        'next': step_desc[6].lstrip().split(' ')
                     }
                 elif step_desc[1].lstrip() == 'prop_event':
                     self.flow[step_desc[0]] = {
@@ -131,7 +133,8 @@ class FlowNode:
                         'type': step_desc[1].lstrip(),
                         'block': step_desc[2].lstrip(),
                         'prop' : step_desc[3].lstrip(),
-                        'next': step_desc[4].lstrip().split(' ')
+                        'gaze' : step_desc[4].lstrip(),
+                        'next': step_desc[5].lstrip().split(' ')
                     }
 
                 elif step_desc[1].lstrip() == 'rfid_block':
@@ -140,7 +143,8 @@ class FlowNode:
                         'prop': step_desc[2].lstrip(),
                         'block':step_desc[3].lstrip(),
                         'sound': step_desc[4].lstrip(),
-                        'next': step_desc[5].lstrip()
+                        'gaze': step_desc[5].lstrip(),
+                        'next': step_desc[6].lstrip()
                     }
 
                 elif step_desc[1].lstrip() == 'ROS_prop_block':
@@ -174,7 +178,8 @@ class FlowNode:
                     self.flow[step_desc[0]] = {
                         'type': 'block',
                         'block': step_desc[1].lstrip(),
-                        'next': step_desc[2].lstrip().split(' ')
+                        'gaze': step_desc[2].lstrip(),
+                        'next': step_desc[3].lstrip().split(' ')
                     }
 
     def load_inter_block_sequence(self, file_name=''):
@@ -211,6 +216,7 @@ class FlowNode:
                     FlowNode.block_player.ros_event_occured = False
             #print "current step : ", current_step[0], 'new', self.flow[current_step[0]]['type']
             if self.flow[current_step[0]]['type'] == 'loop_block':
+                FlowNode.block_player.publish_gaze_mode(self.flow[current_step[0]]['gaze'])
                 block_name = self.get_block_name(current_step)
                 #print 'loop block name: ', block_name
                 FlowNode.block_player.sound_filename = None
@@ -264,6 +270,7 @@ class FlowNode:
                 FlowNode.block_player.mode_publisher.publish(self.flow[current_step[0]]['who'])
                 current_step = self.flow[current_step[0]]['next']
             elif self.flow[current_step[0]]['type'] == 'mixed_block':
+                FlowNode.block_player.publish_gaze_mode(self.flow[current_step[0]]['gaze'])
                 block_name = self.get_block_name(current_step)
                 FlowNode.block_player.sound_filename = None
                 sound_temp = self.flow[current_step[0]]['sound']
@@ -307,6 +314,7 @@ class FlowNode:
                 current_step = self.flow[current_step[0]]['next']
 
             elif self.flow[current_step[0]]['type'] == 'rfid_block':
+                FlowNode.block_player.publish_gaze_mode(self.flow[current_step[0]]['gaze'])
                 block_name = self.get_block_name(current_step)
                 FlowNode.block_player.sound_filename = None
                 FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + self.flow[current_step[0]]['sound'] + '.mp3'
@@ -364,6 +372,7 @@ class FlowNode:
                         current_step = self.flow[current_step[0]]['next']
                         continue
                 else:
+                    FlowNode.block_player.publish_gaze_mode(self.flow[current_step[0]]['gaze'])
                     self.play_complex_block(block_name, stop_on_sound=stop_on_sound)
                 current_step = self.flow[current_step[0]]['next']
 
