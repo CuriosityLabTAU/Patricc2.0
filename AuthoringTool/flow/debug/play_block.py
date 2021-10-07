@@ -95,7 +95,7 @@ class play_block():
     def world_callback(self, data):
         #print 'event activation', self.event_activation
         msg = data.data
-        print 'PLAY BLOCK: got message from world = ', msg
+        #print 'PLAY BLOCK: got message from world = ', msg
         msg_split = msg.split(',')
         #self.world_event_old = self.world_event
         self.world_action = msg_split[0]
@@ -564,12 +564,12 @@ class play_block():
                 prop_event_occured = False
                 self.ros_event_occured = False
         elif rule_sign == 'ROS_change':
-            print "PLAY BLOCK: check ROS change rule"
+            #print "PLAY BLOCK: check ROS change rule"
             if self.new_ros_event == 'true':
                 prop_event_occured = True
                 self.ros_event_occured = True
                 self.new_ros_event = 'false'
-                print "PLAY BLOCK: ROS event changed"
+                #print "PLAY BLOCK: ROS event changed"
 
             else:
                 prop_event_occured = False

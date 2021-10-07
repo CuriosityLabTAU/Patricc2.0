@@ -4,14 +4,14 @@ props, cow donkey sheep
 cover, banana lemon water strawberry orange
 
 #, introduction
-start, loop_block, yawn, 3, on, a_1
+a_1, loop_block, yawn, 3, on, gaze_motion, a_1
 
 #, start farm animals
-a_1, ros_publish, game_2, b_1
+start, ros_publish, game_2, b_1
 
 #, Fuzzy respond conditions
 b_1, prop_event, is_ROS_change, on, ROS_change, none, b_3, b_2
-b_2, loop_block, idle_1, 10, on, b_1
+b_2, loop_block, idle_1, 10, on, gaze_face, b_1
 b_3, prop_event, yummy, on, ROS, yummy, c_3, b_4
 b_4, prop_event, yuck, on, ROS, yuck, c_4, b_5
 b_5, prop_event, drinking, on, ROS, drink, c_5, b_6
@@ -23,16 +23,25 @@ b_9, prop_event, time_up, on, ROS, time_up, c_9, b_10
 b_10, prop_event, all_animals_ate, on, ROS, all_ate, c_10, b_1
 
 #, Fuzzy responses to animals
-c_3, loop_block, idle_1, 1, on, c_3a
-c_3a, mixed_block, idle_1, the {} is eating a {}, ROS, on, sound, b_1
-c_4, mixed_block, idle_1, yuck, none, on, sound, b_1
-c_5, mixed_block, idle_1, the {} wants to drink, ROS, on, sound, b_1
-c_6, mixed_block, idle_1, the {} is hungry, ROS, on, sound, b_1
+c_3x, loop_block, idle_1, 1, on, gaze_face, c_3a
+c_3, rfid_block, ROS, point, None, gaze_motion, c_3a
 
-c_7, mixed_block, idle_1, the {} bored, ROS, on, sound, b_1
-c_8, mixed_block, idle_1, did I hear the {}, ROS, on, sound, b_1
-c_9, mixed_block, idle_1, time_up , ROS, on, sound, b_1
-c_10, mixed_block, idle_1, time_up , ROS, on, sound, b_1
+c_3a, mixed_block, idle_1, the {} is eating a {}, ROS, on, sound, gaze_face, b_1
+c_4, mixed_block, idle_1, yuck, none, on, sound, gaze_face, b_1
+c_5, mixed_block, idle_1, the {} wants to drink, ROS, on, sound, gaze_face, b_1
+c_6, mixed_block, idle_1, the {} is hungry, ROS, on, sound, gaze_face, b_1
+
+c_7, mixed_block, idle_1, the {} bored, ROS, on, sound, gaze_face, b_1
+c_8, mixed_block, idle_1, did I hear the {}, ROS, on, sound, gaze_face, b_1
+c_9, mixed_block, idle_1, time_up , ROS, on, sound, gaze_face, b_1
+c_10, mixed_block, idle_1, time_up , ROS, on, sound, gaze_face, b_1
+
+
+
+
+
+
+
 
 
 

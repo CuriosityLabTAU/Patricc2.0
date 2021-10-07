@@ -58,7 +58,8 @@ class FlowNode:
                     self.flow[step_desc[0]] = {
                         'type': 'block',
                         'block': step_desc[2].lstrip(),
-                        'next': step_desc[3].lstrip().split(' ')
+                        'gaze': step_desc[3].lstrip(),
+                        'next': step_desc[4].lstrip().split(' ')
                     }
                 elif step_desc[1].lstrip() == 'composite':
                     self.flow[step_desc[0]] = {
@@ -319,6 +320,10 @@ class FlowNode:
                 FlowNode.block_player.sound_filename = None
                 FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + self.flow[current_step[0]]['sound'] + '.mp3'
                 FlowNode.block_player.lip_filename = self.base_path + 'sounds/' + self.flow['path'] + self.flow[current_step[0]]['sound'] + '.csv'
+
+                if self.flow[current_step[0]]['sound']=='None':
+                    FlowNode.block_player.sound_filename = None
+                    FlowNode.block_player.lip_filename = None
                 #print 'check 1:', current_step[0], ',', self.flow[current_step[0]]['next']
                 self.next_block = self.get_block_name([self.flow[current_step[0]]['next']])
                 FlowNode.block_player.update_rifd()
