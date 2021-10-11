@@ -73,6 +73,7 @@ class play_block():
         self.robot_motors_no_mouth = robot_parameters.robot_motors_no_mouth
         self.robot_motor_mouth = robot_parameters.robot_motor_mouth
         self.motor_speed = robot_parameters.motor_speed
+        self.lip = 'on'
 
         rospy.init_node('block_player')
         #self.game_activator.publish('game_2')
@@ -300,6 +301,7 @@ class play_block():
         np_real_output = np.array(real_output)
 
     def play_motor_commands(self, motor_commands, stop_on_sound=False, play_sound='on', duration=500, activation="off", rule=[], rule_sign=[], lip='on', stop_at='block'):
+        self.lip = lip
         first_item = motor_commands[0, :]
         old_item = motor_commands[0, :]
         is_playing = False
@@ -394,6 +396,7 @@ class play_block():
 
     def load_files(self):
         self.lip_angle = []
+
         if self.lip_filename:
             with open(self.lip_filename, 'rb') as input:
                 self.lip_reader = csv.reader(input)  # get all topics

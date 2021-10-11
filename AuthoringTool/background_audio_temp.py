@@ -58,7 +58,7 @@ class BackgroundAudio():
         rospy.Subscriber('/rfid', String, self.callback_rfid)
         rospy.Subscriber('/game_activation', String, self.callback_activation)
         self.world_publisher = rospy.Publisher('/world_action', String, queue_size=10)
-        print 'background audio started'
+        print 'background started running'
         rospy.spin()
 
 
@@ -112,7 +112,7 @@ class BackgroundAudio():
         elif self.activation == 'on':
             if msg != 'game_2':
                 self.activation = 'off'
-        print 'activation callback is ', msg
+        print msg
 
     def reset(self):
         self.rfids = [None for i in range(5)]

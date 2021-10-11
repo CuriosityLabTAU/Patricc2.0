@@ -10,7 +10,7 @@ a_2, block, hey youre back, gaze_face, a_3
 a_3, block, im so happy, gaze_face, a_4
 a_4, block, Can you help me feed the animals, gaze_face, a_5
 a_5, loop_block, idle_1, 2, on, gaze_face, a_6
-a_6, great, gaze_face, b_1
+a_6, block, great, gaze_face, b_1
 
 #, get the cow from the barn
 b_1, mixed_block, idle_1, cow angry 1, NONE, off, sound, gaze_face, b_1_1

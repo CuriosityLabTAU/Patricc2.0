@@ -3,7 +3,7 @@ from datetime import datetime
 import copy
 import os.path
 import collections
-
+import threading
 
 # block_player = play_block()
 # time.sleep(1)
@@ -173,6 +173,12 @@ class FlowNode:
                         'next': step_desc[3].lstrip()
                     }
 
+                elif step_desc[1].lstrip() == 'run_script':
+                    self.flow[step_desc[0]] = {
+                        'type': step_desc[1].lstrip(),
+                        'next': step_desc[2].lstrip()
+                    }
+
                 elif step_desc[0].lstrip() == '#':
                     pass
                 else:
@@ -200,22 +206,23 @@ class FlowNode:
         current_prop = []
         self.exit_step = {}
         while current_step[0] != 'end':
-            print  "RUNFLOW: event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", \
-                self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
-            print "RUNFLOW: props: ", FlowNode.block_player.rfids
+            #print  "RUNFLOW: event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", \
+            #    self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
+            #print "RUNFLOW: props: ", FlowNode.block_player.rfids
             if current_step[0] == 'exit_step':
                 current_step[0] = self.exit_step[current_step[1]]
             if self.activation=='on':
-                print "RUNFLOW: checking event"
+                #print "RUNFLOW: checking event"
                 self.check_event()
                 if self.event_occured == True or FlowNode.block_player.ros_event_occured == True:
-                    print "RUNFLOW: event happend"
+                    #print "RUNFLOW: event happend"
                     self.exit_step[self.event_name] = current_step[0]
                     current_step[0] = self.event_goto
                     self.activation = "off"
                     FlowNode.block_player.event_activation = self.activation
                     FlowNode.block_player.ros_event_occured = False
             #print "current step : ", current_step[0], 'new', self.flow[current_step[0]]['type']
+
             if self.flow[current_step[0]]['type'] == 'loop_block':
                 FlowNode.block_player.publish_gaze_mode(self.flow[current_step[0]]['gaze'])
                 block_name = self.get_block_name(current_step)
@@ -300,11 +307,13 @@ class FlowNode:
                             temp_prop = FlowNode.block_player.world_animal
                         sound_temp = self.flow[current_step[0]]['sound'].format(*temp_prop)
                         block_name = self.get_block_name(current_step)
+                        print "the sheep is eating a ", sound_temp, block_name
                     else:
                         sound_temp = 'breath'
                         block_name = './blocks/game_1/waiting'
                     #print 'RUNFLOW: this is temp prop:   ', temp_prop
                     #print 'RUNFLOW: sound: ', self.flow[current_step[0]]['sound']
+                #print "we are here"
                 FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.mp3'
                 FlowNode.block_player.lip_filename = self.base_path + 'sounds/' + self.flow['path'] + sound_temp + '.csv'
                 #print "testing ", block_name, sound_temp, FlowNode.block_player.sound_filename,FlowNode.block_player.lip_filename
@@ -318,18 +327,22 @@ class FlowNode:
                 FlowNode.block_player.publish_gaze_mode(self.flow[current_step[0]]['gaze'])
                 block_name = self.get_block_name(current_step)
                 FlowNode.block_player.sound_filename = None
+                if self.flow[current_step[0]]['sound']=='None':
+                    self.flow[current_step[0]]['sound'] = 'snoring'#this is a patch made for times that we don' want to play sound. If we dont give the name of an existing file, we get an error.
+                    self.flow[current_step[0]]['sound'] = 'snoring'
+                    play_sound = 'off'
                 FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + self.flow[current_step[0]]['sound'] + '.mp3'
                 FlowNode.block_player.lip_filename = self.base_path + 'sounds/' + self.flow['path'] + self.flow[current_step[0]]['sound'] + '.csv'
 
-                if self.flow[current_step[0]]['sound']=='None':
-                    FlowNode.block_player.sound_filename = None
-                    FlowNode.block_player.lip_filename = None
+                #    FlowNode.block_player.sound_filename = None
+                #    FlowNode.block_player.lip_filename = None
                 #print 'check 1:', current_step[0], ',', self.flow[current_step[0]]['next']
                 self.next_block = self.get_block_name([self.flow[current_step[0]]['next']])
                 FlowNode.block_player.update_rifd()
                 stop_on_sound = False #self.flow[current_step]['type'] == 'point' #TODO
                 #self.play_complex_block(block_name, stop_on_sound=stop_on_sound, activation=self.activation)
-                self.play_complex_block(block_name, activation=self.activation, rule=self.rule, rule_sign=self.rule_sign)
+
+                self.play_complex_block(block_name, activation=self.activation, rule=self.rule, rule_sign=self.rule_sign, play_sound=play_sound)
                 #print 'next step is ', self.flow[current_step[0]]['next']
                 current_step = [self.flow[current_step[0]]['next']]
 
@@ -339,6 +352,9 @@ class FlowNode:
 
             elif self.flow[current_step[0]]['type'] == 'gaze_mode':
                 FlowNode.block_player.publish_gaze_mode(self.flow[current_step[0]]['mode'])
+                current_step = [self.flow[current_step[0]]['next']]
+            elif self.flow[current_step[0]]['type'] == 'run_script':
+                self.run_thread(self.worker_background_audio)
                 current_step = [self.flow[current_step[0]]['next']]
 
             else:
@@ -566,7 +582,7 @@ class FlowNode:
         elif self.rule_sign == 'ROS':
             #print 'ros event in runflow = ', FlowNode.block_player.ros_event_occured
             temp_event_occured = FlowNode.block_player.check_prop_event(self.rule, self.rule_sign)
-            print "RUNFLOW: in checking evet: ", FlowNode.block_player.ros_event_occured
+            #print "RUNFLOW: in checking evet: ", FlowNode.block_player.ros_event_occured
             if FlowNode.block_player.ros_event_occured == True:
                 self.event_occured = True
             else:
@@ -591,6 +607,21 @@ class FlowNode:
         self.wrong_on_console = np.setdiff1d(detected_props, self.rule)
         #print 'wrong in air: ', self.wrong_in_air, ' wrong on console: ', self.wrong_on_console
         #time.sleep(0.1)
+
+    #def worker_thread_script(self, script):
+    #    thread_name = 'python '+script
+    #    print('starting script '+ script), thread_name
+    #    os.system('python '+script)
+    #   return
+
+    def worker_background_audio(self):
+        print('starting background audio...')
+        os.system('python flow/debug/background_audio.py')
+        return
+
+    def run_thread(self, worker):
+        threading.Thread(target=worker).start()
+        threading._sleep(2.0)
 
 #flow = FlowNode()
 # === demo ====
