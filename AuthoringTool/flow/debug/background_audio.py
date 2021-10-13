@@ -9,6 +9,7 @@ from copy import copy
 from copy import deepcopy
 from datetime import datetime
 import random
+import sys
 
 
 
@@ -73,6 +74,7 @@ class BackgroundAudio():
 
     def callback_rfid(self, data):
         msg = data.data
+        print msg
         for i in range(5):
             rfid = msg[i*8:(i+1)*8]
             if '---' in rfid:
@@ -107,12 +109,13 @@ class BackgroundAudio():
         msg = data.data
         if self.activation == 'off':
             if msg == 'game_2':
-                self.reset()
                 self.activation = 'on'
         elif self.activation == 'on':
             if msg != 'game_2':
                 self.activation = 'off'
+                print "i am here 2"
         print 'activation callback is ', msg
+        self.controller() #added judt for debugging the thread turmination
 
     def reset(self):
         self.rfids = [None for i in range(5)]
@@ -160,14 +163,13 @@ class BackgroundAudio():
 
 
     def controller(self):
-        print 'activation: ', self.activation
-        #print 'here'
-        #self.world_publisher.publish('hello hello')
+        print 'activation : ', self.activation
         if self.activation=='on':
             if mixer.music.get_busy()==False:
                 #print 'here', self.rfids, self.is_rfid_change
                 current_time = datetime.now()
                 if (current_time-self.game_start_time).total_seconds() > self.max_game_time:
+                    self.play_sound('cow', 'bell')
                     self.last_action = 'times_up'
                 elif (current_time-self.last_action_time).total_seconds() > self.wake_up_time[0] and self.last_action != 'regular':
                     #print (current_time-self.last_action_time).total_seconds()
@@ -184,9 +186,10 @@ class BackgroundAudio():
                     self.last_action_time = datetime.now()
                     self.last_action = 'bored' + ',' + random_animal + ',' + 'none'
                     self.world_publisher.publish(self.last_action)
-                elif self.is_rfid_change==True:
+                elif self.is_rfid_change==True and self.rfid_change[0]!= None:
                     animal = self.rfid_change[0]
                     food = self.rfid_change[1]
+                    print "animal: ", animal
                     sleep_time = self.sleep_log[animal]['time']
                     if self.sleep_log[animal]['sleep'] == 'true' and (current_time-sleep_time).total_seconds()>self.max_sleep:
                         self.sleep_log[animal]['sleep'] = 'false'
@@ -225,6 +228,7 @@ class BackgroundAudio():
                 #print self.last_action
             #self.world_publisher.publish(self.last_action)
             time.sleep(0.1)
+        self.is_rfid_change = False
 
 
 ba = BackgroundAudio()

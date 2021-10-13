@@ -123,7 +123,7 @@ class SessionGUI(tk.Frame):
         self.frame_finish.grid(column=0, row=4)
         self.button_finish = tk.Button(self.frame_finish, text='Finish!', command=self.finish_session)
         self.button_finish.grid(column=0, row=0)
-        self.button_finish.configure(state=DISABLED)
+        self.button_finish.configure(state=NORMAL)
 
         self.final_status_variable = StringVar()
         self.final_status_variable.set('Press Prepare!')
@@ -245,13 +245,14 @@ class SessionGUI(tk.Frame):
 
 
     def run_session(self):
+
         flow = FlowNode()
         flow.base_path = './'
         flow.load(self.session_path + self.session_file_variable.get())
 
-        t1 = threading.Thread(target=self.worker)
-        t1.start()
-        threading._sleep(2.5)
+        #t1 = threading.Thread(target=self.worker)
+        #t1.start()
+        #threading._sleep(2.5)
 
         flow.run()
         self.button_run.configure(state=DISABLED)
@@ -277,6 +278,7 @@ class SessionGUI(tk.Frame):
             self.final_status_variable.set('Please, STOP Recording Camera!')
 
     def finish_session(self):
+        #thr.stop()
         print('Go to sleep')
 
 

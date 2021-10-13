@@ -4,6 +4,8 @@ import copy
 import os.path
 import collections
 import threading
+import multiprocessing
+import subprocess
 
 # block_player = play_block()
 # time.sleep(1)
@@ -27,6 +29,7 @@ class FlowNode:
         self.play_sound = 'on'
         self.event_goto = 'start'
         self.base_path = '../'
+        self.background_thread_running = False
 
     def sound_exist(self, file_name):
         full_name = self.base_path + 'sounds/' + self.flow['path'] + file_name
@@ -206,6 +209,9 @@ class FlowNode:
         current_prop = []
         self.exit_step = {}
         while current_step[0] != 'end':
+            if 'cucumber' in FlowNode.block_player.rfids and self.background_thread_running == True:
+                thr.stop()
+                self.background_thread_running = False
             #print  "RUNFLOW: event name: ", self.event_name, "activation: ", self.activation, "rule sign: ", self.rule_sign, "rule: ", \
             #    self.rule,  "goto: ", self.event_goto, "next: ", current_step[0]
             #print "RUNFLOW: props: ", FlowNode.block_player.rfids
@@ -348,13 +354,20 @@ class FlowNode:
 
             elif self.flow[current_step[0]]['type'] == 'ros_publish':
                 FlowNode.block_player.ros_publish(self.flow[current_step[0]]['publish'])
+                #time.sleep(3)
+                #thr.stop()
+
                 current_step = [self.flow[current_step[0]]['next']]
 
             elif self.flow[current_step[0]]['type'] == 'gaze_mode':
                 FlowNode.block_player.publish_gaze_mode(self.flow[current_step[0]]['mode'])
                 current_step = [self.flow[current_step[0]]['next']]
             elif self.flow[current_step[0]]['type'] == 'run_script':
-                self.run_thread(self.worker_background_audio)
+                #self.run_thread(self.worker_background_audio)
+                #time.sleep(2)
+                thr = self.My_Thread()
+                thr.start()
+                self.background_thread_running = True
                 current_step = [self.flow[current_step[0]]['next']]
 
             else:
@@ -620,8 +633,35 @@ class FlowNode:
         return
 
     def run_thread(self, worker):
+        stop_threads = False
         threading.Thread(target=worker).start()
         threading._sleep(2.0)
+
+    class My_Thread(threading.Thread):
+
+        def __init__(self):
+            threading.Thread.__init__(self)
+            self.process = None
+
+        def run(self):
+            print "Starting " + self.name
+            cmd = [ "bash", 'process.sh']
+            #self.process = p = subprocess.Popen(cmd,
+            #             stdout=subprocess.PIPE,
+            #             stderr=subprocess.STDOUT)
+            self.process = p = subprocess.Popen(['python', 'flow/debug/background_audio.py'])
+            for line in iter(p.stdout.readline, b''):
+                print ("-- " + line.rstrip())
+            print "Exiting " + self.name
+
+        def stop(self):
+            print "Trying to stop thread "
+            if self.process is not None:
+                self.process.terminate()
+                self.process = None
+
+
+
 
 #flow = FlowNode()
 # === demo ====
