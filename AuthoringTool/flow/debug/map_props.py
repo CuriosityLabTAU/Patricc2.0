@@ -28,6 +28,7 @@ prop_to_rfid = {
     'duck': ['200674A2', '401A6DA2', 'DEE3AC00'],
     'cucumber': ['E06A68A2', '807263A2', '4736AD00', '19A3AC00'],
     'cow': ['00F667A2', 'F06B73A2', '24B9AC00'],
+    'tractor': ['04307812']
 }
 
 rfid_to_prop = {}

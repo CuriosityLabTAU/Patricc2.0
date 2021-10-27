@@ -48,7 +48,7 @@ class BackgroundAudio():
                        'sheep':{'yummy':[], 'yuck':[], 'drink':[], 'yawn':[], 'bored':[], 'regular':[]}}
         self.wake_up_time = [60, 90]
         self.max_sleep = 120
-        self.max_game_time = 300
+        self.max_game_time = 180
         self.game_start_time = datetime.now()
         self.last_action = 'start'
         self.sleep_log = {'cow': {'sleep':'false', 'time':datetime.now()},
@@ -59,6 +59,7 @@ class BackgroundAudio():
         rospy.Subscriber('/rfid', String, self.callback_rfid)
         rospy.Subscriber('/game_activation', String, self.callback_activation)
         self.world_publisher = rospy.Publisher('/world_action', String, queue_size=10)
+        self.end_game = False
         print 'background audio started'
         rospy.spin()
 
@@ -74,14 +75,16 @@ class BackgroundAudio():
 
     def callback_rfid(self, data):
         msg = data.data
-        print msg
+        #print msg
         for i in range(5):
             rfid = msg[i*8:(i+1)*8]
+            #print rfid
             if '---' in rfid:
                 self.rfids[i] = None
             else:
                 try:
                     self.rfids[i] = rfid_to_prop[rfid]
+                    #print 'rfid check: ', i, '_: ' , self.rfids[i]
                 except:
                     pass
         self.is_rfid_change = False
@@ -163,14 +166,17 @@ class BackgroundAudio():
 
 
     def controller(self):
-        print 'activation : ', self.activation
-        if self.activation=='on':
+        #print 'activation : ', self.activation
+        if self.activation=='on' and self.end_game==False:
             if mixer.music.get_busy()==False:
                 #print 'here', self.rfids, self.is_rfid_change
                 current_time = datetime.now()
                 if (current_time-self.game_start_time).total_seconds() > self.max_game_time:
                     self.play_sound('cow', 'bell')
-                    self.last_action = 'times_up'
+                    random_animal = random.choice(self.animals)
+                    self.last_action = 'times_up' + ',' + random_animal + ',' + 'none'
+                    self.world_publisher.publish(self.last_action)
+                    self.end_game = True
                 elif (current_time-self.last_action_time).total_seconds() > self.wake_up_time[0] and self.last_action != 'regular':
                     #print (current_time-self.last_action_time).total_seconds()
                     random_animal = random.choice(self.animals)
@@ -223,6 +229,8 @@ class BackgroundAudio():
                                 self.sleep_log[animal]['sleep'] = 'true'
                                 self.sleep_log[animal]['time'] = datetime.now()
                                 self.world_publisher.publish(self.last_action)
+                            if animal == 'tractor':
+                                self.play_sound(animal, 'engine')
                             self.is_rfid_change = False
                             self.last_action_time = datetime.now()
                 #print self.last_action

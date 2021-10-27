@@ -49,13 +49,13 @@ d_18, prop_block, that is a {}, WRONG_IN_AIR, gaze_face, d_19
 d_19, loop_block, idle_2, 2, on, gaze_face, d_9
 d_12, prop_event, pick_up_lemon_2, off, negative, banana orange avocado strawberry, d_13, d_13
 d_13, block, mmm yummy2, gaze_face, d_14
-d_14, block, very good, gaze_face, d_end
+d_14, block, great (1), gaze_face, d_end
 d_end, prop_event, put_down_all_props, on, negative, lemon banana orange avocado strawberry, z_2, f_1
 
 #, what fruit do you like
 f_1, prop_event, pick_up_anything, on, negative, lemon banana orange avocado strawberry, f_6, f_2
 f_2, block, do you like fruit, gaze_face, f_3
-f_3, loop_block, idle_1, 2, on, gaze_face, f_4
+f_3, loop_block, idle_1, 1, on, gaze_face, f_4
 f_4, block, pick up a fruit you like, gaze_face, f_5
 f_5, loop_block, idle_2, 10, on, gaze_face, f_4
 f_6, prop_block, I love {} song, WRONG_IN_AIR, gaze_face, f_end

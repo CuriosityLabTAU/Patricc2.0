@@ -121,7 +121,7 @@ class play_block():
                     self.rfids[i] = rfid_to_prop[rfid]
                 except:
                     print(msg)
-        #print self.rfids
+        print "rfid test: ", self.rfids
 
 
     def update_rifd(self):

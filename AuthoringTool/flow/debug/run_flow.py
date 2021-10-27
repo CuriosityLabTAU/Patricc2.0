@@ -336,7 +336,7 @@ class FlowNode:
                 if self.flow[current_step[0]]['sound']=='None':
                     self.flow[current_step[0]]['sound'] = 'snoring'#this is a patch made for times that we don' want to play sound. If we dont give the name of an existing file, we get an error.
                     self.flow[current_step[0]]['sound'] = 'snoring'
-                    play_sound = 'off'
+                    self.play_sound = 'off'
                 FlowNode.block_player.sound_filename = self.base_path + 'sounds/' + self.flow['path'] + self.flow[current_step[0]]['sound'] + '.mp3'
                 FlowNode.block_player.lip_filename = self.base_path + 'sounds/' + self.flow['path'] + self.flow[current_step[0]]['sound'] + '.csv'
 
@@ -348,7 +348,7 @@ class FlowNode:
                 stop_on_sound = False #self.flow[current_step]['type'] == 'point' #TODO
                 #self.play_complex_block(block_name, stop_on_sound=stop_on_sound, activation=self.activation)
 
-                self.play_complex_block(block_name, activation=self.activation, rule=self.rule, rule_sign=self.rule_sign, play_sound=play_sound)
+                self.play_complex_block(block_name, activation=self.activation, rule=self.rule, rule_sign=self.rule_sign, play_sound=self.play_sound)
                 #print 'next step is ', self.flow[current_step[0]]['next']
                 current_step = [self.flow[current_step[0]]['next']]
 
@@ -650,8 +650,8 @@ class FlowNode:
             #             stdout=subprocess.PIPE,
             #             stderr=subprocess.STDOUT)
             self.process = p = subprocess.Popen(['python', 'flow/debug/background_audio.py'])
-            for line in iter(p.stdout.readline, b''):
-                print ("-- " + line.rstrip())
+            #for line in iter(p.stdout.readline, b''):
+            #    print ("-- " + line.rstrip())
             print "Exiting " + self.name
 
         def stop(self):

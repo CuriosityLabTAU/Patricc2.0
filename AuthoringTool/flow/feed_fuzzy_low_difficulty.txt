@@ -79,7 +79,7 @@ e_1, prop_event, put_down_all_props, on, negative, banana orange avocado strawbe
 e_2, prop_event, put_down_all_props, off, negative, banana orange avocado strawberry lemon, z_2, e_3
 e_3, block, what do i want to eat now, gaze_motion, e_6
 e_6, block, lets see with tounge, gaze_face, e_7
-e_7, rfid_block, avocado, point, a lemon, gaze_motion, e_71
+e_7, rfid_block, lemon, point, a lemon, gaze_motion, e_71
 e_71, rfid_block, strawberry, point, a strawberry, gaze_motion, e_8
 e_8, rfid_block, banana, point, a banana, gaze_motion, e_91
 e_91, block, i know, gaze_face, e_9
@@ -148,7 +148,7 @@ i_2, loop_block, idle_1, 2, on, gaze_face, y_1
 
 
 #, clean up props
-y_1, block, Can you help me clean up, gaze_face, y_2
+y_1, block, Can you help me clean up, gaze_face, y_3
 y_2, loop_block, idle_1, 1, on, gaze_face, y_3
 y_3, block, could you please put all the fruit back in the basket, gaze_motion, y_41
 y_41, loop_block, idle_1, 3, on, gaze_face, y_4

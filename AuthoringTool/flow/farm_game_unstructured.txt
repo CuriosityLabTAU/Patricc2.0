@@ -5,7 +5,7 @@ cover, banana lemon water strawberry orange
 
 #, introduction
 start, run_script, a_0
-a_0, loop_block, idle_1, 2, on, gaze_face, a_00
+a_0, loop_block, idle_1, 2, on, gaze_face, a_7
 a_00, block, hi again, gaze_motion, a_1
 
 a_1, mixed_block, turn_left, animals_hungry, NONE, off, sound, gaze_face, a_2
@@ -21,13 +21,15 @@ a_7, ros_publish, game_2, b_1
 #, Fuzzy respond conditions
 b_1, prop_event, is_ROS_change, on, ROS_change, none, b_3, b_2
 b_2, loop_block, idle_1, 10, on, gaze_face, b_1
+
 b_3, prop_event, yummy, on, ROS, yummy, c_3, b_4
 b_4, prop_event, yuck, on, ROS, yuck, c_4, b_5
 b_5, prop_event, drinking, on, ROS, drink, c_5, b_6
-b_6, prop_event, tired, on, ROS, tired, c_6, b_1
+b_6, prop_event, tired, on, ROS, tired, c_6, b_7
 b_7, prop_event, bored, on, ROS, bored, c_7, b_8
 b_8, prop_event, regular, on, ROS, regular, c_8, b_9
-b_9, prop_event, time_up, on, ROS, time_up, c_9, b_10
+b_9, prop_event, times_up, on, ROS, times_up, c_9, b_1
+
 b_10, prop_event, all_animals_ate, on, ROS, all_ate, c_10, b_1
 
 #, Fuzzy responses to animals
@@ -38,24 +40,27 @@ c_4, rfid_block, ROS, point, None, gaze_motion, c_4a
 c_4a, mixed_block, idle_1, yuck, none, on, sound, gaze_face, b_1
 
 c_5, rfid_block, ROS, point, None, gaze_motion, c_5a
-c_5a, mixed_block, idle_1, the {} wants to drink, ROS, on, sound, gaze_face, b_1
+c_5a, mixed_block, idle_1, the {} is drinking_OG, ROS, on, sound, gaze_face, b_1
 
 c_6, loop_block, idle_1, 2, on, gaze_face, c_6a
-c_6a, mixed_block, idle_1, the {} is tired it wants to go back to the barn, ROS, on, sound, gaze_face, b_1
+c_6a, mixed_block, idle_1, the {} is tired_OG , ROS, on, sound, gaze_face, b_1
+c_6b, mixed_block, idle_1, it wants to go back to the barn , ROS, on, sound, gaze_face, b_1
 
 c_7, loop_block, idle_1, 2, on, gaze_face, c_7a
 c_7a, mixed_block, idle_1, the {} is hungry, ROS, on, sound, gaze_face, b_1
 
-c_8, mixed_block, idle_1, did I hear the {}, ROS, on, sound, gaze_face, b_1
+c_8, mixed_block, idle_1, did i hear a {}_OG, ROS, on, sound, gaze_face, b_1
 
-c_9, loop_block, idle_1, 3, on, gaze_face, c_9a
-c_9, mixed_block, idle_1, thats it its time to put all the animals back in the barn, ROS, on, sound, gaze_face, b_1
+c_9, loop_block, idle_1, 5, on, gaze_face, c_9a
+c_9a, mixed_block, idle_1, i hear a bell_OG, NONE, on, sound, gaze_face, c_9b
+c_9b, mixed_block, idle_1, the bell means the animals_OG, ROS, on, sound, gaze_face, d_1
 
 c_10, mixed_block, idle_1, thats it its time to put all the animals back in the barn, ROS, on, sound, gaze_face, b_1
 
-
-
-
+#, put all the animals back in the barn
+d_1, loop_block, idle_1, 3, on, gaze_face, d_2
+d_2, block, thank you very much, gaze_faze, d_3
+d_3, block, bye bye, gaze_face, end
 
 
 

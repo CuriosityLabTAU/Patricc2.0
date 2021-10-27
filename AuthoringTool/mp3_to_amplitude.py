@@ -92,6 +92,6 @@ def path_to_lip_csv(the_path):
 
 #path_to_lip_csv('sounds/Fuzzy_contest/wav')
 
-mp3_to_lip_csv('sounds/game_2/wav/', 'sounds/game_2/', 'can you find out what each animal likes to eat.wav')
+mp3_to_lip_csv('sounds/game_2/', 'sounds/game_2/', 'do you hear the animals.wav')
 
 
